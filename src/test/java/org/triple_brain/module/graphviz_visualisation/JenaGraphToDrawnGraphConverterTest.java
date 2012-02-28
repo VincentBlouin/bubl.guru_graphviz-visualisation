@@ -9,8 +9,8 @@ import org.junit.Test;
 import org.triple_brain.graphmanipulator.jena.graph.JenaEdgeManipulator;
 import org.triple_brain.graphmanipulator.jena.graph.JenaGraphManipulator;
 import org.triple_brain.graphmanipulator.jena.graph.JenaVertexManipulator;
-import org.triple_brain.model.json.graph.EdgeJSONFields;
-import org.triple_brain.model.json.graph.VertexJSONFields;
+import org.triple_brain.module.model.json.graph.EdgeJSONFields;
+import org.triple_brain.module.model.json.graph.VertexJSONFields;
 
 
 import static org.hamcrest.core.Is.is;
@@ -20,10 +20,10 @@ import static org.triple_brain.graphmanipulator.jena.TripleBrainModel.*;
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.triple_brain.model.json.drawn_graph.DrawnGraphJSONFields.*;
-import static org.triple_brain.model.json.drawn_graph.DrawnVertexJSONFields.*;
-import static org.triple_brain.model.json.drawn_graph.DrawnEdgeJSONFields.*;
-import static org.triple_brain.model.json.drawn_graph.PointJSONFields.*;
+import static org.triple_brain.module.model.json.drawn_graph.DrawnGraphJSONFields.*;
+import static org.triple_brain.module.model.json.drawn_graph.DrawnVertexJSONFields.*;
+import static org.triple_brain.module.model.json.drawn_graph.DrawnEdgeJSONFields.*;
+import static org.triple_brain.module.model.json.drawn_graph.PointJSONFields.*;
 import static org.triple_brain.module.graphviz_visualisation.JenaGraphToDrawnGraphConverter.*;
 
 import static org.triple_brain.graphmanipulator.jena.graph.JenaGraphManipulator.*;

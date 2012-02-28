@@ -8,10 +8,10 @@ import com.ovea.tadjin.util.Uuid;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-import org.triple_brain.model.json.drawn_graph.DrawnEdgeJSONFields;
-import org.triple_brain.model.json.drawn_graph.DrawnVertexJSONFields;
-import org.triple_brain.model.json.graph.EdgeJSONFields;
-import org.triple_brain.model.json.graph.VertexJSONFields;
+import org.triple_brain.module.model.json.drawn_graph.DrawnEdgeJSONFields;
+import org.triple_brain.module.model.json.drawn_graph.DrawnVertexJSONFields;
+import org.triple_brain.module.model.json.graph.EdgeJSONFields;
+import org.triple_brain.module.model.json.graph.VertexJSONFields;
 import org.triple_brain.module.graphviz_visualisation.draw.DrawConstants;
 
 import java.io.File;
@@ -25,10 +25,10 @@ import java.util.regex.Pattern;
 
 import static com.hp.hpl.jena.vocabulary.RDFS.label;
 import static org.triple_brain.graphmanipulator.jena.TripleBrainModel.*;
-import static org.triple_brain.model.json.drawn_graph.DrawnEdgeJSONFields.*;
-import static org.triple_brain.model.json.drawn_graph.DrawnGraphJSONFields.*;
-import static org.triple_brain.model.json.drawn_graph.PointJSONFields.*;
-import static org.triple_brain.model.json.graph.VertexJSONFields.*;
+import static org.triple_brain.module.model.json.drawn_graph.DrawnEdgeJSONFields.*;
+import static org.triple_brain.module.model.json.drawn_graph.DrawnGraphJSONFields.*;
+import static org.triple_brain.module.model.json.drawn_graph.PointJSONFields.*;
+import static org.triple_brain.module.model.json.graph.VertexJSONFields.*;
 
 /**
  * @author Vincent Blouin
