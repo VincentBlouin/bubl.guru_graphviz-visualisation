@@ -1,6 +1,5 @@
 package org.triple_brain.module.graphviz_visualisation;
 
-import com.hp.hpl.jena.rdf.model.*;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -8,71 +7,86 @@ import org.junit.Before;
 import org.junit.Test;
 import org.triple_brain.graphmanipulator.jena.graph.JenaEdgeManipulator;
 import org.triple_brain.graphmanipulator.jena.graph.JenaGraphManipulator;
+import org.triple_brain.graphmanipulator.jena.graph.JenaVertex;
 import org.triple_brain.graphmanipulator.jena.graph.JenaVertexManipulator;
+import org.triple_brain.module.model.graph.Edge;
+import org.triple_brain.module.model.graph.Graph;
+import org.triple_brain.module.model.graph.Vertex;
 import org.triple_brain.module.model.json.graph.EdgeJSONFields;
 import org.triple_brain.module.model.json.graph.VertexJSONFields;
-
-
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertFalse;
-import static org.triple_brain.graphmanipulator.jena.TripleBrainModel.*;
 
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertFalse;
+import static org.triple_brain.graphmanipulator.jena.TripleBrainModel.EMPTY_EDGE_LABEL;
+import static org.triple_brain.graphmanipulator.jena.TripleBrainModel.EMPTY_VERTEX_LABEL;
+import static org.triple_brain.graphmanipulator.jena.graph.JenaGraphManipulator.withDefaultUser;
+import static org.triple_brain.module.model.json.drawn_graph.DrawnEdgeJSONFields.*;
 import static org.triple_brain.module.model.json.drawn_graph.DrawnGraphJSONFields.*;
 import static org.triple_brain.module.model.json.drawn_graph.DrawnVertexJSONFields.*;
-import static org.triple_brain.module.model.json.drawn_graph.DrawnEdgeJSONFields.*;
-import static org.triple_brain.module.model.json.drawn_graph.PointJSONFields.*;
-import static org.triple_brain.module.graphviz_visualisation.JenaGraphToDrawnGraphConverter.*;
-
-import static org.triple_brain.graphmanipulator.jena.graph.JenaGraphManipulator.*;
-import static org.triple_brain.graphmanipulator.jena.graph.JenaVertexManipulator.*;
-import static org.triple_brain.graphmanipulator.jena.graph.JenaEdgeManipulator.*;
+import static org.triple_brain.module.model.json.drawn_graph.PointJSONFields.X;
+import static org.triple_brain.module.model.json.drawn_graph.PointJSONFields.Y;
 
 /**
- * @author Vincent Blouin
+ * Copyright Mozilla Public License 1.1
  */
-public class JenaGraphToDrawnGraphConverterTest {
+public class GraphToDrawnGraphConverterTest {
 
-    private JenaGraphManipulator jenaGraphManipulator;
-    private JenaVertexManipulator jenaVertexManipulator;
-    private JenaEdgeManipulator jenaEdgeManipulator;
-    private Resource firstPerson;
-    private Resource age;
-    private Resource twentyHeight;
+    private JenaGraphManipulator graphManipulator;
+    private JenaVertexManipulator vertexManipulator;
+    private JenaEdgeManipulator edgeManipulator;
+    private Vertex me;
+    private Edge age;
+    private Vertex twentyHeight;
     private final Integer DEPTH_OF_SUB_VERTICES_COVERING_ALL_GRAPH_VERTICES = 10;
 
     @Before
-    public void createJENAGraph(){
-        jenaGraphManipulator = JenaGraphManipulator.jenaGraphManipulatorWithDefaultUser();
-        jenaVertexManipulator = jenaVertexManipulatorWithJenaGraphManipulator(jenaGraphManipulator);
-        jenaEdgeManipulator = jenaEdgeManipulatorWithJenaGraphManipulator(jenaGraphManipulator);
-
-        firstPerson = jenaGraphManipulator.defaultUser().absoluteCentralVertex();
-
-        Statement statement = jenaVertexManipulator.addVertexAndRelation(firstPerson.getLocalName());
-        jenaEdgeManipulator.updateLabel(statement.getPredicate().getLocalName(), "Age");
-        jenaVertexManipulator.updateLabel(statement.getObject().asResource().getLocalName(), "28");
-
-        age = jenaGraphManipulator.graphWithDefaultVertexAndDepth(DEPTH_OF_SUB_VERTICES_COVERING_ALL_GRAPH_VERTICES).getResource(statement.getPredicate().getURI());
-        twentyHeight = jenaGraphManipulator.graphWithDefaultVertexAndDepth(DEPTH_OF_SUB_VERTICES_COVERING_ALL_GRAPH_VERTICES).getResource(statement.getObject().asResource().getURI());
+    public void before(){
+        makeGraphHaveOnlyDefaultCenterVertex();
+        createVertexFirstPersonThatHaveEdgeAgePointingToVertexTwentyHeight();
     }
 
-    private void resetToEmptyGraph(){
-        jenaGraphManipulator = jenaGraphManipulatorWithDefaultUser();
-        jenaVertexManipulator = jenaVertexManipulatorWithJenaGraphManipulator(jenaGraphManipulator);
-        jenaEdgeManipulator = jenaEdgeManipulatorWithJenaGraphManipulator(jenaGraphManipulator);
+    private void makeGraphHaveOnlyDefaultCenterVertex(){
+        graphManipulator = withDefaultUser();
+        vertexManipulator = JenaVertexManipulator.withJenaGraphManipulator(graphManipulator);
+        edgeManipulator = JenaEdgeManipulator.withJenaGraphManipulator(graphManipulator);
+        deleteNeighborsOfDefaultCentralVertex();
+    }
+
+    private void deleteNeighborsOfDefaultCentralVertex(){
+        Vertex defaultCenterVertex = JenaVertex.withResource(
+                graphManipulator.defaultUser().absoluteCentralVertex()
+                );
+        for(Edge edge: defaultCenterVertex.connectedEdges()){
+            if(edge.sourceVertex().equals(defaultCenterVertex)){
+                vertexManipulator.removeVertex(edge.destinationVertex().id());
+            }
+            else{
+                vertexManipulator.removeVertex(edge.sourceVertex().id());
+            }
+        }
+    }
+
+    private void createVertexFirstPersonThatHaveEdgeAgePointingToVertexTwentyHeight(){
+        me = JenaVertex.withResource(
+                graphManipulator.defaultUser().absoluteCentralVertex()
+        );
+        age = vertexManipulator.addVertexAndRelation(me.id());
+        age.label("Age");
+        twentyHeight = age.destinationVertex();
+        twentyHeight.label("28");
     }
 
     @Test
-    public void can_convert_JENA_graph_to_JSON_drawn_graph() throws Exception {
+    public void can_convert_graph_to_JSON_drawn_graph() throws Exception {
+        JSONObject drawnGraph = convertWholeGraph();
 
-        JSONObject drawnGraph = JenaGraphToDrawnGraphConverter.graphVizDrawing(jenaGraphManipulator.graphWithDefaultVertexAndDepth(DEPTH_OF_SUB_VERTICES_COVERING_ALL_GRAPH_VERTICES));
         assertThat(drawnGraph, is(not(nullValue())));
 
-        assertThat(drawnGraph.getJSONArray(EDGES).length(), is(2));
-        assertThat(drawnGraph.getJSONArray(VERTICES).length(), is(3));
+        assertThat(drawnGraph.getJSONArray(EDGES).length(), is(1));
+        assertThat(drawnGraph.getJSONArray(VERTICES).length(), is(2));
 
         Integer boundingBoxWidth = Integer.valueOf(drawnGraph.getString(BOUNDING_BOX_WIDTH));
         assertThat(boundingBoxWidth, is(greaterThan(0)));
@@ -82,7 +96,7 @@ public class JenaGraphToDrawnGraphConverterTest {
 
     @Test
     public void numbers_in_graph_have_the_right_class_type() throws Exception {
-        JSONObject drawnGraph = JenaGraphToDrawnGraphConverter.graphVizDrawing(jenaGraphManipulator.graphWithDefaultVertexAndDepth(DEPTH_OF_SUB_VERTICES_COVERING_ALL_GRAPH_VERTICES));
+        JSONObject drawnGraph = convertWholeGraph();
         JSONObject edge = drawnGraph.getJSONArray(EDGES).getJSONObject(0);
         JSONObject arrowLineBezierPoint = edge.getJSONArray(ARROW_LINE_BEZIER_POINTS).getJSONObject(0);
         assertThat(arrowLineBezierPoint.get(X).getClass().getName(), is("java.lang.Double"));
@@ -90,34 +104,36 @@ public class JenaGraphToDrawnGraphConverterTest {
     }
 
     @Test
-    public void with_a_single_vertex_can_convert_JENA_graph_to_JSON_drawn_graph() throws Exception {
-        resetToEmptyGraph();
-        assertThat(jenaGraphManipulator.graphWithDefaultVertexAndDepth(DEPTH_OF_SUB_VERTICES_COVERING_ALL_GRAPH_VERTICES).listSubjects().toList().size(), is(3));
+    public void with_a_single_vertex_can_convert_graph_to_json_drawn_graph() throws Exception {
+        makeGraphHaveOnlyDefaultCenterVertex();
+        assertThat(wholeGraph().numberOfVertices(), is(1));
+        assertThat(wholeGraph().numberOfEdges(), is(0));
 
-        JSONObject drawnGraph = JenaGraphToDrawnGraphConverter.graphVizDrawing(jenaGraphManipulator.graphWithDefaultVertexAndDepth(DEPTH_OF_SUB_VERTICES_COVERING_ALL_GRAPH_VERTICES));
+        JSONObject drawnGraph = convertWholeGraph();
 
-        assertThat(drawnGraph.getJSONArray(VERTICES).length(), is(2));
-        assertThat(drawnGraph.getJSONArray(EDGES).length(), is(1));
+        assertThat(drawnGraph.getJSONArray(VERTICES).length(), is(1));
+        assertThat(drawnGraph.getJSONArray(EDGES).length(), is(0));
     }
 
     @Test
     public void with_circular_graph_can_convert_JENA_graph_to_JSON_drawn_graph() throws Exception {
 
-        //creating graph roger_lamothe --Age-> 28 --is favorite number of-> roger_lamothe
-        Statement statement = jenaEdgeManipulator.addRelationBetweenVertices(twentyHeight.getLocalName(), firstPerson.getLocalName());
-        jenaEdgeManipulator.updateLabel(statement.getObject().asResource().getLocalName(), "is favorite number of");
+        Edge edge = edgeManipulator.addRelationBetweenVertices(
+                twentyHeight.id(), me.id()
+        );
+        edge.label("is favorite number of");
 
-        JSONObject drawnGraph = JenaGraphToDrawnGraphConverter.graphVizDrawing(jenaGraphManipulator.graphWithDefaultVertexAndDepth(DEPTH_OF_SUB_VERTICES_COVERING_ALL_GRAPH_VERTICES));
+        JSONObject drawnGraph = convertWholeGraph();
         assertThat(drawnGraph, is(not(nullValue())));
 
-        assertThat(drawnGraph.getJSONArray(EDGES).length(), is(3));
-        assertThat(drawnGraph.getJSONArray(VERTICES).length(), is(3));
+        assertThat(drawnGraph.getJSONArray(EDGES).length(), is(2));
+        assertThat(drawnGraph.getJSONArray(VERTICES).length(), is(2));
     }
 
     @Test
     public void all_graph_elements_are_within_the_bounding_box_of_the_graph() throws Exception{
 
-        JSONObject drawnGraph = JenaGraphToDrawnGraphConverter.graphVizDrawing(jenaGraphManipulator.graphWithDefaultVertexAndDepth(DEPTH_OF_SUB_VERTICES_COVERING_ALL_GRAPH_VERTICES));
+        JSONObject drawnGraph = convertWholeGraph();
 
         Integer boundingBoxWidth = Integer.valueOf(drawnGraph.getString(BOUNDING_BOX_WIDTH));
         Integer boundingBoxHeight = Integer.valueOf(drawnGraph.getString(BOUNDING_BOX_HEIGHT));
@@ -175,16 +191,16 @@ public class JenaGraphToDrawnGraphConverterTest {
     @Test
     public void write_default_label_when_label_is_empty() throws Exception {
 
-        JSONObject drawnGraph = JenaGraphToDrawnGraphConverter.graphVizDrawing(jenaGraphManipulator.graphWithDefaultVertexAndDepth(DEPTH_OF_SUB_VERTICES_COVERING_ALL_GRAPH_VERTICES));
+        JSONObject drawnGraph = convertWholeGraph();
 
         assertTrue(containsEdgeWithLabel(drawnGraph.getJSONArray(EDGES), "Age"));
         assertTrue(containsVertexWithLabel(drawnGraph.getJSONArray(VERTICES), "28"));
         assertFalse(containsEdgeWithLabel(drawnGraph.getJSONArray(EDGES), EMPTY_EDGE_LABEL));
         assertFalse(containsVertexWithLabel(drawnGraph.getJSONArray(VERTICES), EMPTY_VERTEX_LABEL));
 
-        jenaEdgeManipulator.updateLabel(age.getLocalName(), "");
-        jenaVertexManipulator.updateLabel(twentyHeight.getLocalName(), "");
-        drawnGraph = JenaGraphToDrawnGraphConverter.graphVizDrawing(jenaGraphManipulator.graphWithDefaultVertexAndDepth(DEPTH_OF_SUB_VERTICES_COVERING_ALL_GRAPH_VERTICES));
+        edgeManipulator.updateLabel(age.id(), "");
+        vertexManipulator.updateLabel(twentyHeight.id(), "");
+        drawnGraph = convertWholeGraph();
 
         assertFalse(containsEdgeWithLabel(drawnGraph.getJSONArray(EDGES), "Age"));
         assertFalse(containsVertexWithLabel(drawnGraph.getJSONArray(VERTICES), "28"));
@@ -194,16 +210,15 @@ public class JenaGraphToDrawnGraphConverterTest {
 
     @Test
     public void json_edge_contain_source_and_destination_id() throws Exception {
-        JSONObject drawnGraph = JenaGraphToDrawnGraphConverter.graphVizDrawing(jenaGraphManipulator.graphWithDefaultVertexAndDepth(DEPTH_OF_SUB_VERTICES_COVERING_ALL_GRAPH_VERTICES));
+        JSONObject drawnGraph = convertWholeGraph();
         JSONObject ageEdge = edgeWithLabel(drawnGraph.getJSONArray(EDGES), "Age");
-        assertThat(ageEdge.getString(SOURCE_VERTEX_ID),is(firstPerson.getLocalName()));
-        assertThat(ageEdge.getString(DESTINATION_VERTEX_ID),is(twentyHeight.getLocalName()));
+        assertThat(ageEdge.getString(SOURCE_VERTEX_ID),is(me.id()));
+        assertThat(ageEdge.getString(DESTINATION_VERTEX_ID),is(twentyHeight.id()));
     }
 
     @Test
     public void vertices_have_their_minimum_number_of_edges_from_center_vertex()throws Exception{
-        Model subGraph = jenaGraphManipulator.graphWithDepthAndCenterVertexId(DEPTH_OF_SUB_VERTICES_COVERING_ALL_GRAPH_VERTICES, firstPerson.getLocalName());
-        JSONObject drawnGraph = graphVizDrawing(subGraph);
+        JSONObject drawnGraph = convertWholeGraph();
         JSONObject jsonRogerLamothe = vertexWithLabel(drawnGraph.getJSONArray(VERTICES), "me");
         JSONObject jsonTwentyHeight = vertexWithLabel(drawnGraph.getJSONArray(VERTICES), "28");
         assertThat(jsonRogerLamothe.getInt(MIN_NUMBER_OF_EDGES_FROM_CENTER_VERTEX), is(0));
@@ -212,61 +227,88 @@ public class JenaGraphToDrawnGraphConverterTest {
 
     @Test
     public void vertices_at_the_maximum_depth_of_center_vertices_that_have_more_sub_vertices_have_a_special_property() throws Exception{
-        Statement statement = jenaVertexManipulator.addVertexAndRelation(firstPerson.getLocalName());
-        Resource nicknameAttribute = statement.getPredicate();
-        Resource nickname = statement.getObject().asResource();
-        jenaEdgeManipulator.updateLabel(nicknameAttribute.getLocalName(), "nickname");
-        jenaVertexManipulator.updateLabel(nickname.getLocalName(), "Bob");
+        addNickNameBobToMe();
 
-        Model jenaGraph = jenaGraphManipulator.graphWithDepthAndCenterVertexId(2, twentyHeight.getLocalName());
-        JSONObject drawnGraph = graphVizDrawing(jenaGraph);
+        Graph subGraph = graphManipulator.graphWithDepthAndCenterVertexId(
+                2, twentyHeight.id()
+        );
+        JSONObject drawnGraph = convertGraph(subGraph);
         JSONObject firstPersonVertex = vertexWithLabel(drawnGraph.getJSONArray(VERTICES), "me");
         assertFalse(firstPersonVertex.has(IS_FRONTIER_VERTEX_WITH_HIDDEN_VERTICES));
 
-        jenaGraph = jenaGraphManipulator.graphWithDepthAndCenterVertexId(1, twentyHeight.getLocalName());
-        drawnGraph = graphVizDrawing(jenaGraph);
+        subGraph = graphManipulator.graphWithDepthAndCenterVertexId(
+                1, twentyHeight.id()
+        );
+        drawnGraph = convertGraph(subGraph);
         firstPersonVertex = vertexWithLabel(drawnGraph.getJSONArray(VERTICES), "me");
         assertTrue(firstPersonVertex.has(IS_FRONTIER_VERTEX_WITH_HIDDEN_VERTICES));
     }
 
     @Test
     public void frontier_vertices_with_hidden_vertices_hold_their_number_of_hidden_vertices()throws Exception{
-        Statement statement = jenaVertexManipulator.addVertexAndRelation(firstPerson.getLocalName());
-        Resource nicknameAttribute = statement.getPredicate();
-        Resource nickname = statement.getObject().asResource();
-        jenaEdgeManipulator.updateLabel(nicknameAttribute.getLocalName(), "nickname");
-        jenaVertexManipulator.updateLabel(nickname.getLocalName(), "Bob");
+        addNickNameBobToMe();
 
-        Model jenaGraph = jenaGraphManipulator.graphWithDepthAndCenterVertexId(2, twentyHeight.getLocalName());
-        JSONObject drawnGraph = graphVizDrawing(jenaGraph);
-        JSONObject firstPersonVertex = vertexWithLabel(drawnGraph.getJSONArray(VERTICES), "me");
-        assertFalse(firstPersonVertex.has(NUMBER_OF_HIDDEN_CONNECTED_VERTICES));
+        Graph subGraph = graphManipulator.graphWithDepthAndCenterVertexId(
+                2,
+                twentyHeight.id()
+        );
+        JSONObject drawnGraph = convertGraph(subGraph);
+        JSONObject meVertex = vertexWithLabel(
+                drawnGraph.getJSONArray(VERTICES),
+                "me"
+        );
+        assertFalse(
+                meVertex.has(NUMBER_OF_HIDDEN_CONNECTED_VERTICES)
+        );
 
-        jenaGraph = jenaGraphManipulator.graphWithDepthAndCenterVertexId(1, twentyHeight.getLocalName());
-        drawnGraph = graphVizDrawing(jenaGraph);
-        firstPersonVertex = vertexWithLabel(drawnGraph.getJSONArray(VERTICES), "me");
-        assertThat(firstPersonVertex.getInt(NUMBER_OF_HIDDEN_CONNECTED_VERTICES), is(2));
+        subGraph = graphManipulator.graphWithDepthAndCenterVertexId(
+                1, twentyHeight.id());
+        drawnGraph = convertGraph(subGraph);
+        meVertex = vertexWithLabel(
+                drawnGraph.getJSONArray(VERTICES), "me"
+        );
+        assertThat(
+                meVertex.getInt(NUMBER_OF_HIDDEN_CONNECTED_VERTICES),
+                is(1)
+        );
     }
 
     @Test
     public void frontier_vertices_with_hidden_vertices_hold_names_of_their_hidden_properties()throws Exception{
-        Statement statement = jenaVertexManipulator.addVertexAndRelation(firstPerson.getLocalName());
-        Resource nicknameAttribute = statement.getPredicate();
-        Resource nickname = statement.getObject().asResource();
-        jenaEdgeManipulator.updateLabel(nicknameAttribute.getLocalName(), "nickname");
-        jenaVertexManipulator.updateLabel(nickname.getLocalName(), "Bob");
-
-        Model jenaGraph = jenaGraphManipulator.graphWithDepthAndCenterVertexId(2, twentyHeight.getLocalName());
-        JSONObject drawnGraph = graphVizDrawing(jenaGraph);
-        JSONObject firstPersonVertex = vertexWithLabel(drawnGraph.getJSONArray(VERTICES), "me");
+        addNickNameBobToMe();
+        Graph subGraph =
+                graphManipulator.graphWithDepthAndCenterVertexId(
+                        2, twentyHeight.id()
+                );
+        JSONObject drawnGraph = convertGraph(subGraph);
+        JSONObject firstPersonVertex = vertexWithLabel(
+                drawnGraph.getJSONArray(VERTICES), "me"
+        );
         assertFalse(firstPersonVertex.has(NAME_OF_HIDDEN_PROPERTIES));
 
-        jenaGraph = jenaGraphManipulator.graphWithDepthAndCenterVertexId(1, twentyHeight.getLocalName());
-        drawnGraph = graphVizDrawing(jenaGraph);
+        subGraph = graphManipulator.graphWithDepthAndCenterVertexId(
+                1, twentyHeight.id());
+        drawnGraph = convertGraph(subGraph);
         firstPersonVertex = vertexWithLabel(drawnGraph.getJSONArray(VERTICES), "me");
-        assertThat(firstPersonVertex.getJSONArray(NAME_OF_HIDDEN_PROPERTIES).length(), is(2));
-        assertTrue(JSONArrayContainsString(firstPersonVertex.getJSONArray(NAME_OF_HIDDEN_PROPERTIES), "name"));
-        assertTrue(JSONArrayContainsString(firstPersonVertex.getJSONArray(NAME_OF_HIDDEN_PROPERTIES), "nickname"));
+        assertThat(
+                firstPersonVertex.getJSONArray(NAME_OF_HIDDEN_PROPERTIES).length(),
+                is(1)
+        );
+        assertTrue(
+                JSONArrayContainsString(firstPersonVertex
+                        .getJSONArray(NAME_OF_HIDDEN_PROPERTIES),
+                        "nickname")
+        );
+    }
+
+    private Edge addNickNameBobToMe(){
+        Edge nickname = vertexManipulator.addVertexAndRelation(
+                me.id()
+        );
+        nickname.label("nickname");
+        Vertex bob = nickname.destinationVertex();
+        bob.label("Bob");
+        return nickname;
     }
 
     private boolean JSONArrayContainsString(JSONArray jsonArray, String stringToTest) throws JSONException{
@@ -312,6 +354,19 @@ public class JenaGraphToDrawnGraphConverterTest {
             }
         }
         return false;
+    }
+
+    private Graph wholeGraph(){
+        return graphManipulator.graphWithDefaultVertexAndDepth(DEPTH_OF_SUB_VERTICES_COVERING_ALL_GRAPH_VERTICES);
+    }
+
+
+    private JSONObject convertWholeGraph()throws JSONException{
+        return GraphToDrawnGraphConverter.withGraph(wholeGraph()).convert();
+    }
+
+    private JSONObject convertGraph(Graph graph)throws JSONException{
+        return GraphToDrawnGraphConverter.withGraph(graph).convert();
     }
 
 }
