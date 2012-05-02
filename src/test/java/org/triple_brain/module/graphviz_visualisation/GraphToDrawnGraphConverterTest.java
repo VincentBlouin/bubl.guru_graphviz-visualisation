@@ -3,12 +3,13 @@ package org.triple_brain.module.graphviz_visualisation;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.triple_brain.graphmanipulator.jena.graph.JenaEdgeManipulator;
 import org.triple_brain.graphmanipulator.jena.graph.JenaGraphManipulator;
-import org.triple_brain.graphmanipulator.jena.graph.JenaVertex;
 import org.triple_brain.graphmanipulator.jena.graph.JenaVertexManipulator;
+import org.triple_brain.module.model.User;
 import org.triple_brain.module.model.graph.Edge;
 import org.triple_brain.module.model.graph.Graph;
 import org.triple_brain.module.model.graph.Vertex;
@@ -20,9 +21,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
+import static org.triple_brain.graphmanipulator.jena.JenaConnection.closeConnection;
 import static org.triple_brain.graphmanipulator.jena.TripleBrainModel.EMPTY_EDGE_LABEL;
 import static org.triple_brain.graphmanipulator.jena.TripleBrainModel.EMPTY_VERTEX_LABEL;
-import static org.triple_brain.graphmanipulator.jena.graph.JenaGraphManipulator.withDefaultUser;
 import static org.triple_brain.module.model.json.drawn_graph.DrawnEdgeJSONFields.*;
 import static org.triple_brain.module.model.json.drawn_graph.DrawnGraphJSONFields.*;
 import static org.triple_brain.module.model.json.drawn_graph.DrawnVertexJSONFields.*;
@@ -42,37 +43,32 @@ public class GraphToDrawnGraphConverterTest {
     private Vertex twentyHeight;
     private final Integer DEPTH_OF_SUB_VERTICES_COVERING_ALL_GRAPH_VERTICES = 10;
 
+    private User user = User.withUsernameAndEmail(
+            "roger_lamothe",
+            "roger.lamothe@example.org"
+    );
+
     @Before
-    public void before(){
+    public void before() throws Exception{
         makeGraphHaveOnlyDefaultCenterVertex();
         createVertexFirstPersonThatHaveEdgeAgePointingToVertexTwentyHeight();
     }
 
-    private void makeGraphHaveOnlyDefaultCenterVertex(){
-        graphManipulator = withDefaultUser();
-        vertexManipulator = JenaVertexManipulator.withJenaGraphManipulator(graphManipulator);
-        edgeManipulator = JenaEdgeManipulator.withJenaGraphManipulator(graphManipulator);
-        deleteNeighborsOfDefaultCentralVertex();
+    @AfterClass
+    public static void after()throws Exception{
+        closeConnection();
     }
 
-    private void deleteNeighborsOfDefaultCentralVertex(){
-        Vertex defaultCenterVertex = JenaVertex.withResource(
-                graphManipulator.defaultUser().absoluteCentralVertex()
-                );
-        for(Edge edge: defaultCenterVertex.connectedEdges()){
-            if(edge.sourceVertex().equals(defaultCenterVertex)){
-                vertexManipulator.removeVertex(edge.destinationVertex().id());
-            }
-            else{
-                vertexManipulator.removeVertex(edge.sourceVertex().id());
-            }
-        }
+    private void makeGraphHaveOnlyDefaultCenterVertex() throws Exception{
+        graphManipulator = JenaGraphManipulator.withUser(user);
+        graphManipulator.graph().removeAll();
+        JenaGraphManipulator.createUserGraph(user);
+        vertexManipulator = JenaVertexManipulator.withUser(user);
+        edgeManipulator = JenaEdgeManipulator.withUser(user);
     }
 
     private void createVertexFirstPersonThatHaveEdgeAgePointingToVertexTwentyHeight(){
-        me = JenaVertex.withResource(
-                graphManipulator.defaultUser().absoluteCentralVertex()
-        );
+        me = vertexManipulator.defaultVertex();
         age = vertexManipulator.addVertexAndRelation(me.id());
         age.label("Age");
         twentyHeight = age.destinationVertex();
