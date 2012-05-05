@@ -1,10 +1,13 @@
 package org.triple_brain.module.graphviz_visualisation;
 
+import com.google.inject.Guice;
+import graph.JenaSQLTestModule;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.triple_brain.graphmanipulator.jena.graph.JenaEdgeManipulator;
 import org.triple_brain.graphmanipulator.jena.graph.JenaGraphManipulator;
@@ -42,6 +45,11 @@ public class GraphToDrawnGraphConverterTest {
     private Edge age;
     private Vertex twentyHeight;
     private final Integer DEPTH_OF_SUB_VERTICES_COVERING_ALL_GRAPH_VERTICES = 10;
+
+    @BeforeClass
+    public static void beforeClass() throws Exception{
+        Guice.createInjector(new JenaSQLTestModule());
+    }
 
     private User user = User.withUsernameAndEmail(
             "roger_lamothe",
