@@ -10,7 +10,7 @@ import org.triple_brain.module.model.json.graph.EdgeJSONFields;
 import org.triple_brain.module.model.json.graph.VertexJSONFields;
 
 import java.util.Set;
-import static org.triple_brain.graphmanipulator.jena.TripleBrainModel.*;
+
 /**
  * Copyright Mozilla Public License 1.1
  */
@@ -60,12 +60,12 @@ public class GraphToDrawnGraphConverter {
     }
 
     private String vertexRepresentationInDot(Vertex vertex){
-        return "\"" + vertex.id() + "\" [" + VertexJSONFields.ID + "=\"" + vertex.id() + "\" " + VertexJSONFields.LABEL + "=\"" + (vertex.label().trim().equals("") ? EMPTY_VERTEX_LABEL: vertex.label()) + "\"]";
+        return "\"" + vertex.id() + "\" [" + VertexJSONFields.ID + "=\"" + vertex.id() + "\" " + VertexJSONFields.LABEL + "=\"" + (vertex.label().trim().equals("") ? Vertex.EMPTY_LABEL : vertex.label()) + "\"]";
 
     }
 
     private String edgeRepresentationInDot(Edge edge){
-        return "\"" + edge.sourceVertex().id() + "\"->\"" + edge.destinationVertex().id() + "\"["+ EdgeJSONFields.ID+"=\"" + edge.id() + "\" "+ EdgeJSONFields.LABEL+"=\"" + (edge.label().trim().equals("") ? EMPTY_EDGE_LABEL : edge.label()) + "\"];";
+        return "\"" + edge.sourceVertex().id() + "\"->\"" + edge.destinationVertex().id() + "\"["+ EdgeJSONFields.ID+"=\"" + edge.id() + "\" "+ EdgeJSONFields.LABEL+"=\"" + (edge.label().trim().equals("") ? Edge.EMPTY_LABEL : edge.label()) + "\"];";
 
     }
 }

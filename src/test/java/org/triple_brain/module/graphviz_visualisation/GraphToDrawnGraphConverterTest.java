@@ -9,9 +9,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.triple_brain.graphmanipulator.jena.graph.JenaEdgeManipulator;
 import org.triple_brain.graphmanipulator.jena.graph.JenaGraphManipulator;
-import org.triple_brain.graphmanipulator.jena.graph.JenaVertexManipulator;
 import org.triple_brain.module.model.User;
 import org.triple_brain.module.model.graph.Edge;
 import org.triple_brain.module.model.graph.Graph;
@@ -25,8 +23,6 @@ import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
 import static org.triple_brain.graphmanipulator.jena.JenaConnection.closeConnection;
-import static org.triple_brain.graphmanipulator.jena.TripleBrainModel.EMPTY_EDGE_LABEL;
-import static org.triple_brain.graphmanipulator.jena.TripleBrainModel.EMPTY_VERTEX_LABEL;
 import static org.triple_brain.module.model.json.drawn_graph.DrawnEdgeJSONFields.*;
 import static org.triple_brain.module.model.json.drawn_graph.DrawnGraphJSONFields.*;
 import static org.triple_brain.module.model.json.drawn_graph.DrawnVertexJSONFields.*;
@@ -39,8 +35,6 @@ import static org.triple_brain.module.model.json.drawn_graph.PointJSONFields.Y;
 public class GraphToDrawnGraphConverterTest {
 
     private JenaGraphManipulator graphManipulator;
-    private JenaVertexManipulator vertexManipulator;
-    private JenaEdgeManipulator edgeManipulator;
     private Vertex me;
     private Edge age;
     private Vertex twentyHeight;
@@ -71,13 +65,11 @@ public class GraphToDrawnGraphConverterTest {
         graphManipulator = JenaGraphManipulator.withUser(user);
         graphManipulator.graph().removeAll();
         JenaGraphManipulator.createUserGraph(user);
-        vertexManipulator = JenaVertexManipulator.withUser(user);
-        edgeManipulator = JenaEdgeManipulator.withUser(user);
     }
 
     private void createVertexFirstPersonThatHaveEdgeAgePointingToVertexTwentyHeight(){
-        me = vertexManipulator.defaultVertex();
-        age = vertexManipulator.addVertexAndRelation(me.id());
+        me = graphManipulator.defaultVertex();
+        age = me.addVertexAndRelation();
         age.label("Age");
         twentyHeight = age.destinationVertex();
         twentyHeight.label("28");
@@ -122,9 +114,7 @@ public class GraphToDrawnGraphConverterTest {
     @Test
     public void with_circular_graph_can_convert_JENA_graph_to_JSON_drawn_graph() throws Exception {
 
-        Edge edge = edgeManipulator.addRelationBetweenVertices(
-                twentyHeight.id(), me.id()
-        );
+        Edge edge = twentyHeight.addRelationToVertex(me);
         edge.label("is favorite number of");
 
         JSONObject drawnGraph = convertWholeGraph();
@@ -199,17 +189,17 @@ public class GraphToDrawnGraphConverterTest {
 
         assertTrue(containsEdgeWithLabel(drawnGraph.getJSONArray(EDGES), "Age"));
         assertTrue(containsVertexWithLabel(drawnGraph.getJSONArray(VERTICES), "28"));
-        assertFalse(containsEdgeWithLabel(drawnGraph.getJSONArray(EDGES), EMPTY_EDGE_LABEL));
-        assertFalse(containsVertexWithLabel(drawnGraph.getJSONArray(VERTICES), EMPTY_VERTEX_LABEL));
+        assertFalse(containsEdgeWithLabel(drawnGraph.getJSONArray(EDGES), Edge.EMPTY_LABEL));
+        assertFalse(containsVertexWithLabel(drawnGraph.getJSONArray(VERTICES), Vertex.EMPTY_LABEL));
 
-        edgeManipulator.updateLabel(age.id(), "");
-        vertexManipulator.updateLabel(twentyHeight.id(), "");
+        age.label("");
+        twentyHeight.label("");
         drawnGraph = convertWholeGraph();
 
         assertFalse(containsEdgeWithLabel(drawnGraph.getJSONArray(EDGES), "Age"));
         assertFalse(containsVertexWithLabel(drawnGraph.getJSONArray(VERTICES), "28"));
-        assertTrue(containsEdgeWithLabel(drawnGraph.getJSONArray(EDGES), EMPTY_EDGE_LABEL));
-        assertTrue(containsVertexWithLabel(drawnGraph.getJSONArray(VERTICES), EMPTY_VERTEX_LABEL));
+        assertTrue(containsEdgeWithLabel(drawnGraph.getJSONArray(EDGES), Edge.EMPTY_LABEL));
+        assertTrue(containsVertexWithLabel(drawnGraph.getJSONArray(VERTICES), Vertex.EMPTY_LABEL));
     }
 
     @Test
@@ -306,9 +296,7 @@ public class GraphToDrawnGraphConverterTest {
     }
 
     private Edge addNickNameBobToMe(){
-        Edge nickname = vertexManipulator.addVertexAndRelation(
-                me.id()
-        );
+        Edge nickname = me.addVertexAndRelation();
         nickname.label("nickname");
         Vertex bob = nickname.destinationVertex();
         bob.label("Bob");

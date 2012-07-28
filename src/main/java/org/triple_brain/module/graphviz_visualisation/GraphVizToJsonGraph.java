@@ -7,24 +7,19 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.triple_brain.module.model.graph.Graph;
-import org.triple_brain.module.model.graph.Vertex;
-import org.triple_brain.module.model.json.drawn_graph.DrawnEdgeJSONFields;
 import org.triple_brain.module.model.json.drawn_graph.DrawnVertexJSONFields;
+import org.triple_brain.module.model.json.graph.EdgeJSONFields;
 import org.triple_brain.module.model.json.graph.VertexJSONFields;
 
-import java.util.List;
 import java.util.regex.Pattern;
 
 import static org.triple_brain.module.model.json.drawn_graph.DrawnEdgeJSONFields.*;
-import static org.triple_brain.module.model.json.drawn_graph.DrawnEdgeJSONFields.ARROW_HEAD_SUMMIT_3;
 import static org.triple_brain.module.model.json.drawn_graph.DrawnGraphJSONFields.BOUNDING_BOX_HEIGHT;
 import static org.triple_brain.module.model.json.drawn_graph.DrawnGraphJSONFields.BOUNDING_BOX_WIDTH;
 import static org.triple_brain.module.model.json.drawn_graph.PointJSONFields.X;
 import static org.triple_brain.module.model.json.drawn_graph.PointJSONFields.Y;
 import static org.triple_brain.module.model.json.graph.GraphJSONFields.EDGES;
 import static org.triple_brain.module.model.json.graph.GraphJSONFields.VERTICES;
-import static org.triple_brain.module.model.json.graph.VertexJSONFields.MIN_NUMBER_OF_EDGES_FROM_CENTER_VERTEX;
-import static org.triple_brain.module.model.json.graph.VertexJSONFields.NAME_OF_HIDDEN_PROPERTIES;
 
 public class GraphVizToJsonGraph {
 
@@ -104,10 +99,9 @@ public class GraphVizToJsonGraph {
             String elementId = mainStringScanner.lastRemovedText().replace("\"", "");
 
             if (isEdge) {
-                JSONObject edge = new JSONObject();
-                edge.put(DrawnEdgeJSONFields.ID, elementId);
-                edge.put(DrawnEdgeJSONFields.SOURCE_VERTEX_ID, sourceVertexId.replace("\"", ""));
-                edge.put(DrawnEdgeJSONFields.DESTINATION_VERTEX_ID, destinationVertexId.replace("\"", ""));
+                JSONObject edge = EdgeJSONFields.edgeToJson(
+                        originalGraph.edgeWithIdentifier(elementId)
+                );
 
                 //scanning for edge label position
                 mainStringScanner.pattern(labelPositionPattern);
@@ -168,23 +162,13 @@ public class GraphVizToJsonGraph {
                 mainStringScanner.next();
                 mainStringScanner.pattern(endDescription);
                 String edgeLabel = mainStringScanner.next();
-                edgeLabel = edgeLabel.substring(0, edgeLabel.length() - 2);
-                edge.put(DrawnEdgeJSONFields.LABEL, edgeLabel);
 
                 //adding the newly created edge to the built graph
                 builtGraph.getJSONArray(EDGES).put(edge);
             } else {
-                JSONObject jsonVertex = new JSONObject();
-                jsonVertex.put(DrawnVertexJSONFields.ID, elementId);
-                Vertex vertex = originalGraph.vertexWithIdentifier(elementId);
-                List<String> hiddenConnectedEdgesLabel = vertex.hiddenConnectedEdgesLabel();
-                if(!hiddenConnectedEdgesLabel.isEmpty()){
-                    jsonVertex.put(VertexJSONFields.IS_FRONTIER_VERTEX_WITH_HIDDEN_VERTICES, true);
-                    Integer numberOfHiddenConnectedVertices = hiddenConnectedEdgesLabel.size();
-                    jsonVertex.put(VertexJSONFields.NUMBER_OF_HIDDEN_CONNECTED_VERTICES, numberOfHiddenConnectedVertices);
-                    jsonVertex.put(NAME_OF_HIDDEN_PROPERTIES, new JSONArray(hiddenConnectedEdgesLabel));
-                }
-                jsonVertex.put(MIN_NUMBER_OF_EDGES_FROM_CENTER_VERTEX, vertex.minNumberOfEdgesFromCenterVertex());
+                JSONObject jsonVertex = VertexJSONFields.vertexToJson(
+                        originalGraph.vertexWithIdentifier(elementId)
+                );
 
                 //scanning for the vertex position
                 mainStringScanner.pattern(vertexPos);
@@ -213,7 +197,6 @@ public class GraphVizToJsonGraph {
                 String vertexLabel = mainStringScanner.next();
                 //removing 2 extras characters got from the last scanner.next();
                 vertexLabel = vertexLabel.substring(0, vertexLabel.length() - 2);
-                jsonVertex.put(DrawnVertexJSONFields.LABEL, vertexLabel);
 
                 //adding the newly created vertex to the built graph
                 builtGraph.getJSONArray(VERTICES).put(jsonVertex);
