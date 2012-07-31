@@ -211,15 +211,6 @@ public class GraphToDrawnGraphConverterTest {
     }
 
     @Test
-    public void vertices_have_their_minimum_number_of_edges_from_center_vertex()throws Exception{
-        JSONObject drawnGraph = convertWholeGraph();
-        JSONObject jsonRogerLamothe = vertexWithLabel(drawnGraph.getJSONArray(VERTICES), "me");
-        JSONObject jsonTwentyHeight = vertexWithLabel(drawnGraph.getJSONArray(VERTICES), "28");
-        assertThat(jsonRogerLamothe.getInt(MIN_NUMBER_OF_EDGES_FROM_CENTER_VERTEX), is(0));
-        assertThat(jsonTwentyHeight.getInt(MIN_NUMBER_OF_EDGES_FROM_CENTER_VERTEX), is(1));
-    }
-
-    @Test
     public void vertices_at_the_maximum_depth_of_center_vertices_that_have_more_sub_vertices_have_a_special_property() throws Exception{
         addNickNameBobToMe();
 
