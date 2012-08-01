@@ -63,7 +63,7 @@ public class GraphToDrawnGraphConverterTest {
 
     private void makeGraphHaveOnlyDefaultCenterVertex() throws Exception{
         graphManipulator = JenaGraphManipulator.withUser(user);
-        graphManipulator.graph().removeAll();
+        graphManipulator.model().removeAll();
         JenaGraphManipulator.createUserGraph(user);
     }
 
