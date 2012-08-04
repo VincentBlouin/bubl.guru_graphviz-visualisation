@@ -6,8 +6,8 @@ import org.triple_brain.module.graphviz_visualisation.draw.DrawConstants;
 import org.triple_brain.module.model.graph.Edge;
 import org.triple_brain.module.model.graph.Graph;
 import org.triple_brain.module.model.graph.Vertex;
-import org.triple_brain.module.model.json.graph.EdgeJSONFields;
-import org.triple_brain.module.model.json.graph.VertexJSONFields;
+import org.triple_brain.module.model.json.graph.EdgeJsonFields;
+import org.triple_brain.module.model.json.graph.VertexJsonFields;
 
 import java.util.Set;
 
@@ -60,12 +60,12 @@ public class GraphToDrawnGraphConverter {
     }
 
     private String vertexRepresentationInDot(Vertex vertex){
-        return "\"" + vertex.id() + "\" [" + VertexJSONFields.ID + "=\"" + vertex.id() + "\" " + VertexJSONFields.LABEL + "=\"" + (vertex.label().trim().equals("") ? Vertex.EMPTY_LABEL : vertex.label()) + "\"]";
+        return "\"" + vertex.id() + "\" [" + VertexJsonFields.ID + "=\"" + vertex.id() + "\" " + VertexJsonFields.LABEL + "=\"" + (vertex.label().trim().equals("") ? Vertex.EMPTY_LABEL : vertex.label()) + "\"]";
 
     }
 
     private String edgeRepresentationInDot(Edge edge){
-        return "\"" + edge.sourceVertex().id() + "\"->\"" + edge.destinationVertex().id() + "\"["+ EdgeJSONFields.ID+"=\"" + edge.id() + "\" "+ EdgeJSONFields.LABEL+"=\"" + (edge.label().trim().equals("") ? Edge.EMPTY_LABEL : edge.label()) + "\"];";
+        return "\"" + edge.sourceVertex().id() + "\"->\"" + edge.destinationVertex().id() + "\"["+ EdgeJsonFields.ID+"=\"" + edge.id() + "\" "+ EdgeJsonFields.LABEL+"=\"" + (edge.label().trim().equals("") ? Edge.EMPTY_LABEL : edge.label()) + "\"];";
 
     }
 }

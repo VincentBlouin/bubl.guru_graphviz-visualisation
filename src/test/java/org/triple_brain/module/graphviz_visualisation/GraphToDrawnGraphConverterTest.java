@@ -14,8 +14,8 @@ import org.triple_brain.module.model.User;
 import org.triple_brain.module.model.graph.Edge;
 import org.triple_brain.module.model.graph.Graph;
 import org.triple_brain.module.model.graph.Vertex;
-import org.triple_brain.module.model.json.graph.EdgeJSONFields;
-import org.triple_brain.module.model.json.graph.VertexJSONFields;
+import org.triple_brain.module.model.json.graph.EdgeJsonFields;
+import org.triple_brain.module.model.json.graph.VertexJsonFields;
 
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -305,7 +305,7 @@ public class GraphToDrawnGraphConverterTest {
 
     private JSONObject vertexWithLabel(JSONArray vertices, String label) throws Exception{
         for(int i = 0 ; i < vertices.length(); i++){
-            if(vertices.getJSONObject(i).getString(VertexJSONFields.LABEL).equals(label)){
+            if(vertices.getJSONObject(i).getString(VertexJsonFields.LABEL).equals(label)){
                 return vertices.getJSONObject(i);
             }
         }
@@ -314,7 +314,7 @@ public class GraphToDrawnGraphConverterTest {
 
     private JSONObject edgeWithLabel(JSONArray edges, String label) throws Exception{
         for(int i = 0 ; i < edges.length(); i++){
-            if(edges.getJSONObject(i).getString(EdgeJSONFields.LABEL).equals(label)){
+            if(edges.getJSONObject(i).getString(EdgeJsonFields.LABEL).equals(label)){
                 return edges.getJSONObject(i);
             }
         }
@@ -323,7 +323,7 @@ public class GraphToDrawnGraphConverterTest {
 
     private boolean containsVertexWithLabel(JSONArray vertices, String label) throws Exception{
         for(int i = 0 ; i < vertices.length(); i++){
-            if(vertices.getJSONObject(i).getString(VertexJSONFields.LABEL).equals(label)){
+            if(vertices.getJSONObject(i).getString(VertexJsonFields.LABEL).equals(label)){
                 return true;
             }
         }
@@ -332,7 +332,7 @@ public class GraphToDrawnGraphConverterTest {
 
     private boolean containsEdgeWithLabel(JSONArray edges, String label) throws Exception{
         for(int i = 0 ; i < edges.length(); i++){
-            if(edges.getJSONObject(i).getString(VertexJSONFields.LABEL).equals(label)){
+            if(edges.getJSONObject(i).getString(VertexJsonFields.LABEL).equals(label)){
                 return true;
             }
         }

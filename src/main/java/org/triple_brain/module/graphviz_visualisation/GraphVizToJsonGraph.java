@@ -8,8 +8,8 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.triple_brain.module.model.graph.Graph;
 import org.triple_brain.module.model.json.drawn_graph.DrawnVertexJSONFields;
-import org.triple_brain.module.model.json.graph.EdgeJSONFields;
-import org.triple_brain.module.model.json.graph.VertexJSONFields;
+import org.triple_brain.module.model.json.graph.EdgeJsonFields;
+import org.triple_brain.module.model.json.graph.VertexJsonFields;
 
 import java.util.regex.Pattern;
 
@@ -99,7 +99,7 @@ public class GraphVizToJsonGraph {
             String elementId = mainStringScanner.lastRemovedText().replace("\"", "");
 
             if (isEdge) {
-                JSONObject edge = EdgeJSONFields.edgeToJson(
+                JSONObject edge = EdgeJsonFields.toJson(
                         originalGraph.edgeWithIdentifier(elementId)
                 );
 
@@ -166,7 +166,7 @@ public class GraphVizToJsonGraph {
                 //adding the newly created edge to the built graph
                 builtGraph.getJSONArray(EDGES).put(edge);
             } else {
-                JSONObject jsonVertex = VertexJSONFields.vertexToJson(
+                JSONObject jsonVertex = VertexJsonFields.toJson(
                         originalGraph.vertexWithIdentifier(elementId)
                 );
 
