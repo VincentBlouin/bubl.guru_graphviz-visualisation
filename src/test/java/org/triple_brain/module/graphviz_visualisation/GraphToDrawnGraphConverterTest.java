@@ -1,7 +1,8 @@
 package org.triple_brain.module.graphviz_visualisation;
 
 import com.google.inject.Guice;
-import graph.JenaSQLTestModule;
+import com.google.inject.Injector;
+import graph.JenaTestModule;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -9,13 +10,12 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.triple_brain.graphmanipulator.jena.graph.JenaGraphManipulator;
 import org.triple_brain.module.model.User;
-import org.triple_brain.module.model.graph.Edge;
-import org.triple_brain.module.model.graph.Graph;
-import org.triple_brain.module.model.graph.Vertex;
+import org.triple_brain.module.model.graph.*;
 import org.triple_brain.module.model.json.graph.EdgeJsonFields;
 import org.triple_brain.module.model.json.graph.VertexJsonFields;
+
+import javax.inject.Inject;
 
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -34,15 +34,21 @@ import static org.triple_brain.module.model.json.drawn_graph.PointJSONFields.Y;
  */
 public class GraphToDrawnGraphConverterTest {
 
-    private JenaGraphManipulator graphManipulator;
+    @Inject
+    GraphMaker graphMaker;
+
+    private UserGraph userGraph;
+
     private Vertex me;
     private Edge age;
     private Vertex twentyHeight;
     private final Integer DEPTH_OF_SUB_VERTICES_COVERING_ALL_GRAPH_VERTICES = 10;
 
+    private static Injector injector;
+
     @BeforeClass
     public static void beforeClass() throws Exception{
-        Guice.createInjector(new JenaSQLTestModule());
+        injector = Guice.createInjector(new JenaTestModule());
     }
 
     private User user = User.withUsernameAndEmail(
@@ -52,6 +58,7 @@ public class GraphToDrawnGraphConverterTest {
 
     @Before
     public void before() throws Exception{
+        injector.injectMembers(this);
         makeGraphHaveOnlyDefaultCenterVertex();
         createVertexFirstPersonThatHaveEdgeAgePointingToVertexTwentyHeight();
     }
@@ -62,13 +69,13 @@ public class GraphToDrawnGraphConverterTest {
     }
 
     private void makeGraphHaveOnlyDefaultCenterVertex() throws Exception{
-        graphManipulator = JenaGraphManipulator.withUser(user);
-        graphManipulator.model().removeAll();
-        JenaGraphManipulator.createUserGraph(user);
+        userGraph = graphMaker.createForUser(user);
+        userGraph.remove();
+        userGraph = graphMaker.createForUser(user);
     }
 
     private void createVertexFirstPersonThatHaveEdgeAgePointingToVertexTwentyHeight(){
-        me = graphManipulator.defaultVertex();
+        me = userGraph.defaultVertex();
         age = me.addVertexAndRelation();
         age.label("Age");
         twentyHeight = age.destinationVertex();
@@ -214,14 +221,14 @@ public class GraphToDrawnGraphConverterTest {
     public void vertices_at_the_maximum_depth_of_center_vertices_that_have_more_sub_vertices_have_a_special_property() throws Exception{
         addNickNameBobToMe();
 
-        Graph subGraph = graphManipulator.graphWithDepthAndCenterVertexId(
+        SubGraph subGraph = userGraph.graphWithDepthAndCenterVertexId(
                 2, twentyHeight.id()
         );
         JSONObject drawnGraph = convertGraph(subGraph);
         JSONObject firstPersonVertex = vertexWithLabel(drawnGraph.getJSONArray(VERTICES), "me");
         assertFalse(firstPersonVertex.has(IS_FRONTIER_VERTEX_WITH_HIDDEN_VERTICES));
 
-        subGraph = graphManipulator.graphWithDepthAndCenterVertexId(
+        subGraph = userGraph.graphWithDepthAndCenterVertexId(
                 1, twentyHeight.id()
         );
         drawnGraph = convertGraph(subGraph);
@@ -233,7 +240,7 @@ public class GraphToDrawnGraphConverterTest {
     public void frontier_vertices_with_hidden_vertices_hold_their_number_of_hidden_vertices()throws Exception{
         addNickNameBobToMe();
 
-        Graph subGraph = graphManipulator.graphWithDepthAndCenterVertexId(
+        SubGraph subGraph = userGraph.graphWithDepthAndCenterVertexId(
                 2,
                 twentyHeight.id()
         );
@@ -246,7 +253,7 @@ public class GraphToDrawnGraphConverterTest {
                 meVertex.has(NUMBER_OF_HIDDEN_CONNECTED_VERTICES)
         );
 
-        subGraph = graphManipulator.graphWithDepthAndCenterVertexId(
+        subGraph = userGraph.graphWithDepthAndCenterVertexId(
                 1, twentyHeight.id());
         drawnGraph = convertGraph(subGraph);
         meVertex = vertexWithLabel(
@@ -261,8 +268,8 @@ public class GraphToDrawnGraphConverterTest {
     @Test
     public void frontier_vertices_with_hidden_vertices_hold_names_of_their_hidden_properties()throws Exception{
         addNickNameBobToMe();
-        Graph subGraph =
-                graphManipulator.graphWithDepthAndCenterVertexId(
+        SubGraph subGraph =
+                userGraph.graphWithDepthAndCenterVertexId(
                         2, twentyHeight.id()
                 );
         JSONObject drawnGraph = convertGraph(subGraph);
@@ -271,7 +278,7 @@ public class GraphToDrawnGraphConverterTest {
         );
         assertFalse(firstPersonVertex.has(NAME_OF_HIDDEN_PROPERTIES));
 
-        subGraph = graphManipulator.graphWithDepthAndCenterVertexId(
+        subGraph = userGraph.graphWithDepthAndCenterVertexId(
                 1, twentyHeight.id());
         drawnGraph = convertGraph(subGraph);
         firstPersonVertex = vertexWithLabel(drawnGraph.getJSONArray(VERTICES), "me");
@@ -339,8 +346,8 @@ public class GraphToDrawnGraphConverterTest {
         return false;
     }
 
-    private Graph wholeGraph(){
-        return graphManipulator.graphWithDefaultVertexAndDepth(DEPTH_OF_SUB_VERTICES_COVERING_ALL_GRAPH_VERTICES);
+    private SubGraph wholeGraph(){
+        return userGraph.graphWithDefaultVertexAndDepth(DEPTH_OF_SUB_VERTICES_COVERING_ALL_GRAPH_VERTICES);
     }
 
 
@@ -348,7 +355,7 @@ public class GraphToDrawnGraphConverterTest {
         return GraphToDrawnGraphConverter.withGraph(wholeGraph()).convert();
     }
 
-    private JSONObject convertGraph(Graph graph)throws JSONException{
+    private JSONObject convertGraph(SubGraph graph)throws JSONException{
         return GraphToDrawnGraphConverter.withGraph(graph).convert();
     }
 

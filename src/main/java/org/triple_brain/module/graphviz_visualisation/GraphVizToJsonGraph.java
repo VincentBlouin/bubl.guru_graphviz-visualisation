@@ -6,7 +6,7 @@ package org.triple_brain.module.graphviz_visualisation;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-import org.triple_brain.module.model.graph.Graph;
+import org.triple_brain.module.model.graph.SubGraph;
 import org.triple_brain.module.model.json.drawn_graph.DrawnVertexJSONFields;
 import org.triple_brain.module.model.json.graph.EdgeJsonFields;
 import org.triple_brain.module.model.json.graph.VertexJsonFields;
@@ -25,18 +25,18 @@ public class GraphVizToJsonGraph {
 
     public static final Pattern REAL_NUMBER = Pattern.compile("[0-9]+(\\.[0-9]+)?");
 
-    private Graph originalGraph;
+    private SubGraph originalGraph;
     private String graphvizDot = "";
 
 
     JSONObject builtGraph = new JSONObject();
 
     public static GraphVizToJsonGraph withOriginalGraphAndGraphvizString(
-            Graph originalGraph, String graphvizDot){
+            SubGraph originalGraph, String graphvizDot){
         return new GraphVizToJsonGraph(originalGraph, graphvizDot);
     }
 
-    protected GraphVizToJsonGraph(Graph originalGraph, String graphvizDot){
+    protected GraphVizToJsonGraph(SubGraph originalGraph, String graphvizDot){
         this.originalGraph = originalGraph;
         this.graphvizDot = graphvizDot;
     }

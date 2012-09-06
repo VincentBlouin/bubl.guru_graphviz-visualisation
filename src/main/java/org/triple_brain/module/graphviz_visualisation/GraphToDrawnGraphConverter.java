@@ -4,7 +4,7 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.triple_brain.module.graphviz_visualisation.draw.DrawConstants;
 import org.triple_brain.module.model.graph.Edge;
-import org.triple_brain.module.model.graph.Graph;
+import org.triple_brain.module.model.graph.SubGraph;
 import org.triple_brain.module.model.graph.Vertex;
 import org.triple_brain.module.model.json.graph.EdgeJsonFields;
 import org.triple_brain.module.model.json.graph.VertexJsonFields;
@@ -16,13 +16,13 @@ import java.util.Set;
  */
 public class GraphToDrawnGraphConverter {
 
-    private Graph graph;
+    private SubGraph graph;
 
-    public static GraphToDrawnGraphConverter withGraph(Graph graph){
+    public static GraphToDrawnGraphConverter withGraph(SubGraph graph){
         return new GraphToDrawnGraphConverter(graph);
     }
 
-    protected  GraphToDrawnGraphConverter(Graph graph){
+    protected  GraphToDrawnGraphConverter(SubGraph graph){
         this.graph = graph;
     }
 
