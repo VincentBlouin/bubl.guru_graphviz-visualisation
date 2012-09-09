@@ -2,7 +2,6 @@ package org.triple_brain.module.graphviz_visualisation;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import graph.JenaTestModule;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -12,6 +11,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.triple_brain.module.model.User;
 import org.triple_brain.module.model.graph.*;
+import org.triple_brain.module.model.graph.jena.JenaTestModule;
 import org.triple_brain.module.model.json.graph.EdgeJsonFields;
 import org.triple_brain.module.model.json.graph.VertexJsonFields;
 
