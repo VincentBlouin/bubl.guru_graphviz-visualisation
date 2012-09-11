@@ -1,28 +1,21 @@
 package org.triple_brain.module.graphviz_visualisation;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.triple_brain.module.model.User;
 import org.triple_brain.module.model.graph.*;
-import org.triple_brain.module.model.graph.jena.JenaTestModule;
 import org.triple_brain.module.model.json.graph.EdgeJsonFields;
 import org.triple_brain.module.model.json.graph.VertexJsonFields;
-
-import javax.inject.Inject;
 
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
-import static org.triple_brain.graphmanipulator.jena.JenaConnection.closeConnection;
 import static org.triple_brain.module.model.json.drawn_graph.DrawnEdgeJSONFields.*;
 import static org.triple_brain.module.model.json.drawn_graph.DrawnGraphJSONFields.*;
 import static org.triple_brain.module.model.json.drawn_graph.DrawnVertexJSONFields.*;
@@ -32,23 +25,23 @@ import static org.triple_brain.module.model.json.drawn_graph.PointJSONFields.Y;
 /**
  * Copyright Mozilla Public License 1.1
  */
-public class GraphToDrawnGraphConverterTest {
+public class GraphToDrawnGraphConverterTest extends AdaptableGraphComponentTest {
 
-    @Inject
-    GraphMaker graphMaker;
 
-    private UserGraph userGraph;
+
+//    private UserGraph userGraph;
 
     private Vertex me;
     private Edge age;
     private Vertex twentyHeight;
     private final Integer DEPTH_OF_SUB_VERTICES_COVERING_ALL_GRAPH_VERTICES = 10;
 
-    private static Injector injector;
+//    private static Injector injector;
+
 
     @BeforeClass
-    public static void beforeClass() throws Exception{
-        injector = Guice.createInjector(new JenaTestModule());
+    public static void beforeClassHere(){
+//        injector = Guice.createInjector(new JenaTestModule());
     }
 
     private User user = User.withUsernameAndEmail(
@@ -57,20 +50,20 @@ public class GraphToDrawnGraphConverterTest {
     );
 
     @Before
-    public void before() throws Exception{
-        injector.injectMembers(this);
+    public void beforeHere() throws Exception{
+//        injector.injectMembers(this);
         makeGraphHaveOnlyDefaultCenterVertex();
         createVertexFirstPersonThatHaveEdgeAgePointingToVertexTwentyHeight();
     }
 
-    @AfterClass
-    public static void after()throws Exception{
-        closeConnection();
-    }
+//    @AfterClass
+//    public static void afterHere()throws Exception{
+//        closeConnection();
+//    }
 
     private void makeGraphHaveOnlyDefaultCenterVertex() throws Exception{
         userGraph = graphMaker.createForUser(user);
-        userGraph.remove();
+        removeWholeGraph();
         userGraph = graphMaker.createForUser(user);
     }
 
@@ -345,11 +338,6 @@ public class GraphToDrawnGraphConverterTest {
         }
         return false;
     }
-
-    private SubGraph wholeGraph(){
-        return userGraph.graphWithDefaultVertexAndDepth(DEPTH_OF_SUB_VERTICES_COVERING_ALL_GRAPH_VERTICES);
-    }
-
 
     private JSONObject convertWholeGraph()throws JSONException{
         return GraphToDrawnGraphConverter.withGraph(wholeGraph()).convert();
