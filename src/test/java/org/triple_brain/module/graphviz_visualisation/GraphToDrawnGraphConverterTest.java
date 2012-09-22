@@ -7,7 +7,10 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.triple_brain.module.model.User;
-import org.triple_brain.module.model.graph.*;
+import org.triple_brain.module.model.graph.AdaptableGraphComponentTest;
+import org.triple_brain.module.model.graph.Edge;
+import org.triple_brain.module.model.graph.SubGraph;
+import org.triple_brain.module.model.graph.Vertex;
 import org.triple_brain.module.model.json.graph.EdgeJsonFields;
 import org.triple_brain.module.model.json.graph.VertexJsonFields;
 
@@ -26,23 +29,12 @@ import static org.triple_brain.module.model.json.drawn_graph.PointJSONFields.Y;
  * Copyright Mozilla Public License 1.1
  */
 public class GraphToDrawnGraphConverterTest extends AdaptableGraphComponentTest {
-
-
-
-//    private UserGraph userGraph;
-
     private Vertex me;
     private Edge age;
     private Vertex twentyHeight;
-    private final Integer DEPTH_OF_SUB_VERTICES_COVERING_ALL_GRAPH_VERTICES = 10;
-
-//    private static Injector injector;
-
 
     @BeforeClass
-    public static void beforeClassHere(){
-//        injector = Guice.createInjector(new JenaTestModule());
-    }
+    public static void beforeClassHere(){}
 
     private User user = User.withUsernameAndEmail(
             "roger_lamothe",
@@ -51,18 +43,11 @@ public class GraphToDrawnGraphConverterTest extends AdaptableGraphComponentTest 
 
     @Before
     public void beforeHere() throws Exception{
-//        injector.injectMembers(this);
         makeGraphHaveOnlyDefaultCenterVertex();
         createVertexFirstPersonThatHaveEdgeAgePointingToVertexTwentyHeight();
     }
 
-//    @AfterClass
-//    public static void afterHere()throws Exception{
-//        closeConnection();
-//    }
-
     private void makeGraphHaveOnlyDefaultCenterVertex() throws Exception{
-        userGraph = graphMaker.createForUser(user);
         removeWholeGraph();
         userGraph = graphMaker.createForUser(user);
     }
