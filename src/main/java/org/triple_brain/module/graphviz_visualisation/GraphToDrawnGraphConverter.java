@@ -6,6 +6,7 @@ import org.triple_brain.module.graphviz_visualisation.draw.DrawConstants;
 import org.triple_brain.module.model.graph.Edge;
 import org.triple_brain.module.model.graph.SubGraph;
 import org.triple_brain.module.model.graph.Vertex;
+import org.triple_brain.module.model.graph.VertexInSubGraph;
 import org.triple_brain.module.model.json.graph.EdgeJsonFields;
 import org.triple_brain.module.model.json.graph.VertexJsonFields;
 
@@ -43,7 +44,7 @@ public class GraphToDrawnGraphConverter {
         return notDrawnGraphVizDot;
     }
 
-    private String verticesRepresentationInDot(Set<Vertex> vertices){
+    private String verticesRepresentationInDot(Set<VertexInSubGraph> vertices){
         String verticesInGraphVizDot = "";
         for(Vertex vertex : vertices){
             verticesInGraphVizDot += vertexRepresentationInDot(vertex);
