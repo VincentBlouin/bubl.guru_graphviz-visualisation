@@ -4,7 +4,6 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.triple_brain.module.model.User;
 import org.triple_brain.module.model.graph.AdaptableGraphComponentTest;
@@ -33,9 +32,6 @@ public class GraphToDrawnGraphConverterTest extends AdaptableGraphComponentTest 
     private Edge age;
     private Vertex twentyHeight;
 
-    @BeforeClass
-    public static void beforeClassHere(){}
-
     private User user = User.withUsernameAndEmail(
             "roger_lamothe",
             "roger.lamothe@example.org"
@@ -49,7 +45,8 @@ public class GraphToDrawnGraphConverterTest extends AdaptableGraphComponentTest 
 
     private void makeGraphHaveOnlyDefaultCenterVertex() throws Exception{
         removeWholeGraph();
-        userGraph = graphMaker.createForUser(user);
+        graphMaker.createForUser(userGraph.user());
+        setDefaultVertexAkaVertexA(userGraph.defaultVertex());
     }
 
     private void createVertexFirstPersonThatHaveEdgeAgePointingToVertexTwentyHeight(){
@@ -67,7 +64,7 @@ public class GraphToDrawnGraphConverterTest extends AdaptableGraphComponentTest 
         assertThat(drawnGraph, is(not(nullValue())));
 
         assertThat(drawnGraph.getJSONArray(EDGES).length(), is(1));
-        assertThat(drawnGraph.getJSONArray(VERTICES).length(), is(2));
+        assertThat(drawnGraph.getJSONObject(VERTICES).length(), is(2));
 
         Integer boundingBoxWidth = Integer.valueOf(drawnGraph.getString(BOUNDING_BOX_WIDTH));
         assertThat(boundingBoxWidth, is(greaterThan(0)));
@@ -86,14 +83,13 @@ public class GraphToDrawnGraphConverterTest extends AdaptableGraphComponentTest 
 
     @Test
     public void with_a_single_vertex_can_convert_graph_to_json_drawn_graph() throws Exception {
-        makeGraphHaveOnlyDefaultCenterVertex();
-        assertThat(wholeGraph().numberOfVertices(), is(1));
-        assertThat(wholeGraph().numberOfEdges(), is(0));
+        assertThat(wholeGraph().numberOfVertices(), is(2));
+        assertThat(wholeGraph().numberOfEdges(), is(1));
 
         JSONObject drawnGraph = convertWholeGraph();
 
-        assertThat(drawnGraph.getJSONArray(VERTICES).length(), is(1));
-        assertThat(drawnGraph.getJSONArray(EDGES).length(), is(0));
+        assertThat(drawnGraph.getJSONObject(VERTICES).length(), is(2));
+        assertThat(drawnGraph.getJSONArray(EDGES).length(), is(1));
     }
 
     @Test
@@ -106,7 +102,7 @@ public class GraphToDrawnGraphConverterTest extends AdaptableGraphComponentTest 
         assertThat(drawnGraph, is(not(nullValue())));
 
         assertThat(drawnGraph.getJSONArray(EDGES).length(), is(2));
-        assertThat(drawnGraph.getJSONArray(VERTICES).length(), is(2));
+        assertThat(drawnGraph.getJSONObject(VERTICES).length(), is(2));
     }
 
     @Test
@@ -118,14 +114,16 @@ public class GraphToDrawnGraphConverterTest extends AdaptableGraphComponentTest 
         Integer boundingBoxHeight = Integer.valueOf(drawnGraph.getString(BOUNDING_BOX_HEIGHT));
 
         //all vertices position's should be within the graph bounding box
-        for (int i = 0; i < drawnGraph.getJSONArray(VERTICES).length(); i++) {
-            JSONObject vertex = drawnGraph.getJSONArray(VERTICES).getJSONObject(i);
+        JSONArray vertices = verticesAsArray(drawnGraph.getJSONObject(VERTICES));
+        for(int i = 0; i < vertices.length(); i++){
+            JSONObject vertex = vertices.getJSONObject(i);
             JSONObject position = vertex.getJSONObject(POSITION);
             Double xPosition = Double.valueOf(position.getString(X));
             Double yPosition = Double.valueOf(position.getString(Y));
             assertThat(Double.valueOf(boundingBoxWidth), is(greaterThan(xPosition)));
             assertThat(Double.valueOf(boundingBoxHeight), is(greaterThan(yPosition)));
         }
+
         //all edges position's should be within the graph bounding box
         for (int i = 0; i < drawnGraph.getJSONArray(EDGES).length(); i++) {
             JSONObject edge = drawnGraph.getJSONArray(EDGES).getJSONObject(i);
@@ -173,18 +171,18 @@ public class GraphToDrawnGraphConverterTest extends AdaptableGraphComponentTest 
         JSONObject drawnGraph = convertWholeGraph();
 
         assertTrue(containsEdgeWithLabel(drawnGraph.getJSONArray(EDGES), "Age"));
-        assertTrue(containsVertexWithLabel(drawnGraph.getJSONArray(VERTICES), "28"));
+        assertTrue(containsVertexWithLabel(drawnGraph.getJSONObject(VERTICES), "28"));
         assertFalse(containsEdgeWithLabel(drawnGraph.getJSONArray(EDGES), Edge.EMPTY_LABEL));
-        assertFalse(containsVertexWithLabel(drawnGraph.getJSONArray(VERTICES), Vertex.EMPTY_LABEL));
+        assertFalse(containsVertexWithLabel(drawnGraph.getJSONObject(VERTICES), Vertex.EMPTY_LABEL));
 
         age.label("");
         twentyHeight.label("");
         drawnGraph = convertWholeGraph();
 
         assertFalse(containsEdgeWithLabel(drawnGraph.getJSONArray(EDGES), "Age"));
-        assertFalse(containsVertexWithLabel(drawnGraph.getJSONArray(VERTICES), "28"));
+        assertFalse(containsVertexWithLabel(drawnGraph.getJSONObject(VERTICES), "28"));
         assertTrue(containsEdgeWithLabel(drawnGraph.getJSONArray(EDGES), Edge.EMPTY_LABEL));
-        assertTrue(containsVertexWithLabel(drawnGraph.getJSONArray(VERTICES), Vertex.EMPTY_LABEL));
+        assertTrue(containsVertexWithLabel(drawnGraph.getJSONObject(VERTICES), Vertex.EMPTY_LABEL));
     }
 
     @Test
@@ -203,14 +201,14 @@ public class GraphToDrawnGraphConverterTest extends AdaptableGraphComponentTest 
                 2, twentyHeight.id()
         );
         JSONObject drawnGraph = convertGraph(subGraph);
-        JSONObject firstPersonVertex = vertexWithLabel(drawnGraph.getJSONArray(VERTICES), "me");
+        JSONObject firstPersonVertex = vertexWithLabel(drawnGraph.getJSONObject(VERTICES), "me");
         assertFalse(firstPersonVertex.has(IS_FRONTIER_VERTEX_WITH_HIDDEN_VERTICES));
 
         subGraph = userGraph.graphWithDepthAndCenterVertexId(
                 1, twentyHeight.id()
         );
         drawnGraph = convertGraph(subGraph);
-        firstPersonVertex = vertexWithLabel(drawnGraph.getJSONArray(VERTICES), "me");
+        firstPersonVertex = vertexWithLabel(drawnGraph.getJSONObject(VERTICES), "me");
         assertTrue(firstPersonVertex.has(IS_FRONTIER_VERTEX_WITH_HIDDEN_VERTICES));
     }
 
@@ -224,7 +222,7 @@ public class GraphToDrawnGraphConverterTest extends AdaptableGraphComponentTest 
         );
         JSONObject drawnGraph = convertGraph(subGraph);
         JSONObject meVertex = vertexWithLabel(
-                drawnGraph.getJSONArray(VERTICES),
+                drawnGraph.getJSONObject(VERTICES),
                 "me"
         );
         assertFalse(
@@ -235,7 +233,7 @@ public class GraphToDrawnGraphConverterTest extends AdaptableGraphComponentTest 
                 1, twentyHeight.id());
         drawnGraph = convertGraph(subGraph);
         meVertex = vertexWithLabel(
-                drawnGraph.getJSONArray(VERTICES), "me"
+                drawnGraph.getJSONObject(VERTICES), "me"
         );
         assertThat(
                 meVertex.getInt(NUMBER_OF_HIDDEN_CONNECTED_VERTICES),
@@ -252,14 +250,14 @@ public class GraphToDrawnGraphConverterTest extends AdaptableGraphComponentTest 
                 );
         JSONObject drawnGraph = convertGraph(subGraph);
         JSONObject firstPersonVertex = vertexWithLabel(
-                drawnGraph.getJSONArray(VERTICES), "me"
+                drawnGraph.getJSONObject(VERTICES), "me"
         );
         assertFalse(firstPersonVertex.has(NAME_OF_HIDDEN_PROPERTIES));
 
         subGraph = userGraph.graphWithDepthAndCenterVertexId(
                 1, twentyHeight.id());
         drawnGraph = convertGraph(subGraph);
-        firstPersonVertex = vertexWithLabel(drawnGraph.getJSONArray(VERTICES), "me");
+        firstPersonVertex = vertexWithLabel(drawnGraph.getJSONObject(VERTICES), "me");
         assertThat(
                 firstPersonVertex.getJSONArray(NAME_OF_HIDDEN_PROPERTIES).length(),
                 is(1)
@@ -288,7 +286,8 @@ public class GraphToDrawnGraphConverterTest extends AdaptableGraphComponentTest 
         return false;
     }
 
-    private JSONObject vertexWithLabel(JSONArray vertices, String label) throws Exception{
+    private JSONObject vertexWithLabel(JSONObject verticesAsObject, String label) throws Exception{
+        JSONArray vertices = verticesAsArray(verticesAsObject);
         for(int i = 0 ; i < vertices.length(); i++){
             if(vertices.getJSONObject(i).getString(VertexJsonFields.LABEL).equals(label)){
                 return vertices.getJSONObject(i);
@@ -306,7 +305,8 @@ public class GraphToDrawnGraphConverterTest extends AdaptableGraphComponentTest 
         return null;
     }
 
-    private boolean containsVertexWithLabel(JSONArray vertices, String label) throws Exception{
+    private boolean containsVertexWithLabel(JSONObject verticesAsObject, String label) throws Exception{
+        JSONArray vertices = verticesAsArray(verticesAsObject);
         for(int i = 0 ; i < vertices.length(); i++){
             if(vertices.getJSONObject(i).getString(VertexJsonFields.LABEL).equals(label)){
                 return true;

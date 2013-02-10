@@ -65,7 +65,7 @@ public class GraphVizToJsonGraph {
     Pattern centerVertexPattern = Pattern.compile("is_center_vertex=true");
 
     public JSONObject convert()throws JSONException{
-        builtGraph.put(VERTICES, new JSONArray());
+        builtGraph.put(VERTICES, new JSONObject());
         builtGraph.put(EDGES, new JSONArray());
         StringScanner mainStringScanner = StringScanner.withTextToParseAndCurrentPattern(graphvizDot, boundingBox);
         //the text before the bounding box and the attribute 'bb' is useless for us. so we use scanner.next()
@@ -199,7 +199,7 @@ public class GraphVizToJsonGraph {
                 vertexLabel = vertexLabel.substring(0, vertexLabel.length() - 2);
 
                 //adding the newly created vertex to the built graph
-                builtGraph.getJSONArray(VERTICES).put(jsonVertex);
+                builtGraph.getJSONObject(VERTICES).put(elementId, jsonVertex);
             }
 
             mainStringScanner.pattern(nextDescription);
