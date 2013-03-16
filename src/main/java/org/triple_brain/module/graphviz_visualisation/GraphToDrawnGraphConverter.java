@@ -27,7 +27,7 @@ public class GraphToDrawnGraphConverter {
         this.graph = graph;
     }
 
-    public JSONObject convert() throws JSONException {
+    public JSONObject convert(){
         String notDrawnGraphVizFormat = convertGraphToNotDrawnGraphViz();
         String graphVizDrawnGraph = new GraphvizService()
                 .convertToDotDrawnGraph(notDrawnGraphVizFormat);
