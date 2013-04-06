@@ -1,6 +1,5 @@
 package org.triple_brain.module.graphviz_visualisation;
 
-import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.triple_brain.module.graphviz_visualisation.draw.DrawConstants;
 import org.triple_brain.module.model.graph.Edge;
@@ -37,7 +36,15 @@ public class GraphToDrawnGraphConverter {
     }
 
     private String convertGraphToNotDrawnGraphViz() {
-        String notDrawnGraphVizDot = "digraph G {node [fontsize=\"" + DrawConstants.VERTEX_FONT_SIZE + "\",fontname=\"" + DrawConstants.VERTEX_FONT_FAMILY + "\"]; edge [fontsize=\"" + DrawConstants.EDGE_FONT_SIZE + "\",fontname=\"" + DrawConstants.EDGE_FONT_FAMILY + "\"]; K=0.85 mode=\"ipsep\"; sep=\"+35\"; ";
+        String notDrawnGraphVizDot = "digraph G {node [fontsize=\"" +
+                DrawConstants.VERTEX_FONT_SIZE +
+                "\",fontname=\"" +
+                DrawConstants.VERTEX_FONT_FAMILY +
+                "\"]; edge [fontsize=\"" +
+                DrawConstants.EDGE_FONT_SIZE +
+                "\",fontname=\"" +
+                DrawConstants.EDGE_FONT_FAMILY +
+                "\"]; K=0.85 mode=\"ipsep\"; sep=\"+60\"; ";
         notDrawnGraphVizDot += verticesRepresentationInDot(graph.vertices());
         notDrawnGraphVizDot += edgesRepresentationInDot(graph.edges());
         notDrawnGraphVizDot += "}";
