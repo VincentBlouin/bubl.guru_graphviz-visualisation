@@ -44,7 +44,7 @@ public class GraphToDrawnGraphConverter {
                 DrawConstants.EDGE_FONT_SIZE +
                 "\",fontname=\"" +
                 DrawConstants.EDGE_FONT_FAMILY +
-                "\"]; K=0.85 mode=\"ipsep\"; sep=\"+60\"; ";
+                "\"]; K=0.90 mode=\"ipsep\"; sep=\"+35\"; ";
         notDrawnGraphVizDot += verticesRepresentationInDot(graph.vertices());
         notDrawnGraphVizDot += edgesRepresentationInDot(graph.edges());
         notDrawnGraphVizDot += "}";
