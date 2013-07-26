@@ -269,6 +269,22 @@ public class GraphToDrawnGraphConverterTest extends AdaptableGraphComponentTest 
         );
     }
 
+    @Test
+    public void when_vertices_label_are_empty_it_works() throws Exception{
+        JSONObject graph = convertWholeGraph();
+        assertThat(
+                graph.getJSONObject("vertices").length(),
+                is(2)
+        );
+        me.label("");
+        twentyHeight.label("");
+        graph = convertWholeGraph();
+        assertThat(
+                graph.getJSONObject("vertices").length(),
+                is(2)
+        );
+    }
+
     private Edge addNickNameBobToMe(){
         Edge nickname = me.addVertexAndRelation();
         nickname.label("nickname");

@@ -48,21 +48,15 @@ public class GraphVizToJsonGraph {
     //each edge or vertex description of the dot format are encapsulated within '[' and ']'
     Pattern bezierAttributePattern = Pattern.compile("B");
     Pattern nextDescription = Pattern.compile("\\[");
-    Pattern endDescription = Pattern.compile("[^\\]]*");
     Pattern labelPositionPattern = Pattern.compile("[.]*lp=");
     Pattern arrowHeadDrawingInfo = Pattern.compile("_hdraw_=");
     Pattern vertexPos = Pattern.compile("pos=");
-    Pattern lDraw = Pattern.compile("_ldraw_");
-    Pattern vertexLabelPattern = Pattern.compile("[a-z]\\s[0-9]\\s-[^-]+[-]");
-    Pattern edgeLabelName = Pattern.compile("[a-z]\\s[0-9]\\s-[^-]+[-]");
     Pattern arrowPositionPattern = Pattern.compile("P\\s3");
     //each vertex and edge have an additionnal attribute added which is id.
     Pattern idPropertyPattern = Pattern.compile("id=");
     Pattern idValuePattern = Pattern.compile("[.|_|-|\\/]*,");
     //each vertex and edge have an additionnal attribute added which is is_vertex. is_vertex=1 means it's a vertex and is_vertex=0 means it's an edge
     Pattern relationPattern = Pattern.compile("->");
-
-    Pattern centerVertexPattern = Pattern.compile("is_center_vertex=true");
 
     public JSONObject convert(){
        try{
@@ -158,12 +152,6 @@ public class GraphVizToJsonGraph {
                     edge.put(ARROW_HEAD_SUMMIT_2, arrowHeadPoint2);
                     edge.put(ARROW_HEAD_SUMMIT_3, arrowHeadPoint3);
 
-                    //scanning for the edge label name
-                    mainStringScanner.pattern(edgeLabelName);
-                    mainStringScanner.next();
-                    mainStringScanner.pattern(endDescription);
-                    String edgeLabel = mainStringScanner.next();
-
                     //adding the newly created edge to the built graph
                     builtGraph.getJSONArray(EDGES).put(edge);
                 } else {
@@ -187,17 +175,6 @@ public class GraphVizToJsonGraph {
                     mainStringScanner.pattern(REAL_NUMBER);
                     jsonVertex.put(DrawnVertexJSONFields.WIDTH, mainStringScanner.next());
                     jsonVertex.put(DrawnVertexJSONFields.HEIGHT, mainStringScanner.next());
-
-                    //scanning for the vertex label
-                    mainStringScanner.pattern(lDraw);
-                    mainStringScanner.next();
-                    mainStringScanner.pattern(vertexLabelPattern);
-                    mainStringScanner.next();
-                    //The label is just before the end of the vertex description. The end of a description is characterized by ']'
-                    mainStringScanner.pattern(endDescription);
-                    String vertexLabel = mainStringScanner.next();
-                    //removing 2 extras characters got from the last scanner.next();
-                    vertexLabel = vertexLabel.substring(0, vertexLabel.length() - 2);
 
                     //adding the newly created vertex to the built graph
                     builtGraph.getJSONObject(VERTICES).put(elementId, jsonVertex);
