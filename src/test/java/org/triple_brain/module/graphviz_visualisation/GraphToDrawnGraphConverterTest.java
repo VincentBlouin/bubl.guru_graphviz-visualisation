@@ -4,6 +4,7 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.triple_brain.module.model.User;
 import org.triple_brain.module.model.graph.AdaptableGraphComponentTest;
@@ -18,6 +19,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 import static org.triple_brain.module.model.json.drawn_graph.DrawnEdgeJSONFields.*;
 import static org.triple_brain.module.model.json.drawn_graph.DrawnGraphJSONFields.*;
 import static org.triple_brain.module.model.json.drawn_graph.DrawnVertexJSONFields.*;
@@ -283,6 +285,17 @@ public class GraphToDrawnGraphConverterTest extends AdaptableGraphComponentTest 
                 graph.getJSONObject("vertices").length(),
                 is(2)
         );
+    }
+
+    @Test
+    @Ignore("todo")
+    public void can_have_special_characters_in_label() throws Exception{
+        me.label("[{}]");
+        try{
+            convertWholeGraph();
+        }catch(Exception e){
+            fail();
+        }
     }
 
     private Edge addNickNameBobToMe(){
