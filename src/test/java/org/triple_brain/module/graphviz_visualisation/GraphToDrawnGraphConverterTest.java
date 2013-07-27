@@ -4,7 +4,6 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.triple_brain.module.model.User;
 import org.triple_brain.module.model.graph.AdaptableGraphComponentTest;
@@ -288,7 +287,6 @@ public class GraphToDrawnGraphConverterTest extends AdaptableGraphComponentTest 
     }
 
     @Test
-    @Ignore("todo")
     public void can_have_special_characters_in_label() throws Exception{
         me.label("[{}]");
         try{

@@ -68,12 +68,12 @@ public class GraphToDrawnGraphConverter {
     }
 
     private String vertexRepresentationInDot(Vertex vertex){
-        return "\"" + vertex.id() + "\" [" + VertexJsonFields.ID + "=\"" + vertex.id() + "\" " + VertexJsonFields.LABEL + "=\"" + (vertex.label().trim().equals("") ? Vertex.EMPTY_LABEL : vertex.label()) + "\"]";
+        return "\"" + vertex.id() + "\" [" + VertexJsonFields.ID + "=\"" + vertex.id() + "\" " + VertexJsonFields.LABEL + "=\"" + (vertex.label().trim().equals("") ? "aaaaaa" : vertex.label().replaceAll(".", "a")) + "\"]";
 
     }
 
     private String edgeRepresentationInDot(Edge edge){
-        return "\"" + edge.sourceVertex().id() + "\"->\"" + edge.destinationVertex().id() + "\"["+ EdgeJsonFields.ID+"=\"" + edge.id() + "\" "+ EdgeJsonFields.LABEL+"=\"" + (edge.label().trim().equals("") ? Edge.EMPTY_LABEL : edge.label()) + "\"];";
+        return "\"" + edge.sourceVertex().id() + "\"->\"" + edge.destinationVertex().id() + "\"["+ EdgeJsonFields.ID+"=\"" + edge.id() + "\" "+ EdgeJsonFields.LABEL+"=\"" + (edge.label().trim().equals("") ? "aaaaaa" : edge.label().replaceAll(".", "a")) + "\"];";
 
     }
 }
