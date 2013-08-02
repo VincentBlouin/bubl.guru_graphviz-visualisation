@@ -36,7 +36,7 @@ public class GraphToDrawnGraphConverterTest extends AdaptableGraphComponentTest 
     private User user = User.withUsernameEmailAndLocales(
             "roger_lamothe",
             "roger.lamothe@example.org",
-            ""
+            "[fr]"
     );
 
     @Before
