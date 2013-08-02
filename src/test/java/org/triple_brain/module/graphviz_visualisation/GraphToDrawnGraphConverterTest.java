@@ -33,9 +33,10 @@ public class GraphToDrawnGraphConverterTest extends AdaptableGraphComponentTest 
     private Edge age;
     private Vertex twentyHeight;
 
-    private User user = User.withUsernameAndEmail(
+    private User user = User.withUsernameEmailAndLocales(
             "roger_lamothe",
-            "roger.lamothe@example.org"
+            "roger.lamothe@example.org",
+            ""
     );
 
     @Before
