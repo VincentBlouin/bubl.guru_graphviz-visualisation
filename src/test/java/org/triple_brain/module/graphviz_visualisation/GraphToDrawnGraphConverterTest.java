@@ -19,11 +19,11 @@ import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
-import static org.triple_brain.module.model.json.drawn_graph.DrawnEdgeJSONFields.*;
-import static org.triple_brain.module.model.json.drawn_graph.DrawnGraphJSONFields.*;
-import static org.triple_brain.module.model.json.drawn_graph.DrawnVertexJSONFields.*;
-import static org.triple_brain.module.model.json.drawn_graph.PointJSONFields.X;
-import static org.triple_brain.module.model.json.drawn_graph.PointJSONFields.Y;
+import static org.triple_brain.module.model.json.drawn_graph.DrawnEdgeJsonFields.*;
+import static org.triple_brain.module.model.json.drawn_graph.DrawnGraphJsonFields.*;
+import static org.triple_brain.module.model.json.drawn_graph.DrawnVertexJsonFields.*;
+import static org.triple_brain.module.model.json.drawn_graph.PointJsonFields.X;
+import static org.triple_brain.module.model.json.drawn_graph.PointJsonFields.Y;
 
 /**
  * Copyright Mozilla Public License 1.1

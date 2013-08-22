@@ -7,19 +7,19 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.triple_brain.module.model.graph.SubGraph;
-import org.triple_brain.module.model.json.drawn_graph.DrawnVertexJSONFields;
+import org.triple_brain.module.model.json.drawn_graph.DrawnVertexJsonFields;
 import org.triple_brain.module.model.json.graph.EdgeJsonFields;
 import org.triple_brain.module.model.json.graph.VertexJsonFields;
 
 import java.util.regex.Pattern;
 
-import static org.triple_brain.module.model.json.drawn_graph.DrawnEdgeJSONFields.*;
-import static org.triple_brain.module.model.json.drawn_graph.DrawnGraphJSONFields.BOUNDING_BOX_HEIGHT;
-import static org.triple_brain.module.model.json.drawn_graph.DrawnGraphJSONFields.BOUNDING_BOX_WIDTH;
-import static org.triple_brain.module.model.json.drawn_graph.PointJSONFields.X;
-import static org.triple_brain.module.model.json.drawn_graph.PointJSONFields.Y;
-import static org.triple_brain.module.model.json.graph.GraphJSONFields.EDGES;
-import static org.triple_brain.module.model.json.graph.GraphJSONFields.VERTICES;
+import static org.triple_brain.module.model.json.drawn_graph.DrawnEdgeJsonFields.*;
+import static org.triple_brain.module.model.json.drawn_graph.DrawnGraphJsonFields.BOUNDING_BOX_HEIGHT;
+import static org.triple_brain.module.model.json.drawn_graph.DrawnGraphJsonFields.BOUNDING_BOX_WIDTH;
+import static org.triple_brain.module.model.json.drawn_graph.PointJsonFields.X;
+import static org.triple_brain.module.model.json.drawn_graph.PointJsonFields.Y;
+import static org.triple_brain.module.model.json.graph.GraphJsonFields.EDGES;
+import static org.triple_brain.module.model.json.graph.GraphJsonFields.VERTICES;
 
 public class GraphVizToJsonGraph {
 
@@ -169,12 +169,12 @@ public class GraphVizToJsonGraph {
                     JSONObject position = new JSONObject();
                     position.put(X, xPosition);
                     position.put(Y, yPosition);
-                    jsonVertex.put(DrawnVertexJSONFields.POSITION, position);
+                    jsonVertex.put(DrawnVertexJsonFields.POSITION, position);
 
                     //scanning for the vertex width and height
                     mainStringScanner.pattern(REAL_NUMBER);
-                    jsonVertex.put(DrawnVertexJSONFields.WIDTH, mainStringScanner.next());
-                    jsonVertex.put(DrawnVertexJSONFields.HEIGHT, mainStringScanner.next());
+                    jsonVertex.put(DrawnVertexJsonFields.WIDTH, mainStringScanner.next());
+                    jsonVertex.put(DrawnVertexJsonFields.HEIGHT, mainStringScanner.next());
 
                     //adding the newly created vertex to the built graph
                     builtGraph.getJSONObject(VERTICES).put(elementId, jsonVertex);
