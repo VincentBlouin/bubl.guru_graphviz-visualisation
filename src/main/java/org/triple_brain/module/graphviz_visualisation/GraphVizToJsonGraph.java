@@ -11,6 +11,7 @@ import org.triple_brain.module.model.json.drawn_graph.DrawnVertexJsonFields;
 import org.triple_brain.module.model.json.graph.EdgeJsonFields;
 import org.triple_brain.module.model.json.graph.VertexJsonFields;
 
+import java.net.URI;
 import java.util.regex.Pattern;
 
 import static org.triple_brain.module.model.json.drawn_graph.DrawnEdgeJsonFields.*;
@@ -53,7 +54,7 @@ public class GraphVizToJsonGraph {
     Pattern vertexPos = Pattern.compile("pos=");
     Pattern arrowPositionPattern = Pattern.compile("P\\s3");
     //each vertex and edge have an additionnal attribute added which is id.
-    Pattern idPropertyPattern = Pattern.compile("id=");
+    Pattern idPropertyPattern = Pattern.compile("uri=");
     Pattern idValuePattern = Pattern.compile("[.|_|-|\\/]*,");
     //each vertex and edge have an additionnal attribute added which is is_vertex. is_vertex=1 means it's a vertex and is_vertex=0 means it's an edge
     Pattern relationPattern = Pattern.compile("->");
@@ -95,7 +96,9 @@ public class GraphVizToJsonGraph {
 
                 if (isEdge) {
                     JSONObject edge = EdgeJsonFields.toJson(
-                            originalGraph.edgeWithIdentifier(elementId)
+                            originalGraph.edgeWithIdentifier(
+                                    URI.create(elementId)
+                            )
                     );
 
                     //scanning for edge label position
@@ -156,7 +159,9 @@ public class GraphVizToJsonGraph {
                     builtGraph.getJSONArray(EDGES).put(edge);
                 } else {
                     JSONObject jsonVertex = VertexJsonFields.toJson(
-                            originalGraph.vertexWithIdentifier(elementId)
+                            originalGraph.vertexWithIdentifier(
+                                    URI.create(elementId)
+                            )
                     );
 
                     //scanning for the vertex position

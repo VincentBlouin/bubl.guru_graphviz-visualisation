@@ -191,8 +191,14 @@ public class GraphToDrawnGraphConverterTest extends AdaptableGraphComponentTest 
     public void json_edge_contain_source_and_destination_id() throws Exception {
         JSONObject drawnGraph = convertWholeGraph();
         JSONObject ageEdge = edgeWithLabel(drawnGraph.getJSONArray(EDGES), "Age");
-        assertThat(ageEdge.getString(SOURCE_VERTEX_ID),is(me.id()));
-        assertThat(ageEdge.getString(DESTINATION_VERTEX_ID),is(twentyHeight.id()));
+        assertThat(
+                ageEdge.getString(SOURCE_VERTEX_ID),
+                is(me.uri().toString())
+        );
+        assertThat(
+                ageEdge.getString(DESTINATION_VERTEX_ID),
+                is(twentyHeight.uri().toString())
+        );
     }
 
     @Test
@@ -200,14 +206,14 @@ public class GraphToDrawnGraphConverterTest extends AdaptableGraphComponentTest 
         addNickNameBobToMe();
 
         SubGraph subGraph = userGraph.graphWithDepthAndCenterVertexId(
-                2, twentyHeight.id()
+                2, twentyHeight.uri()
         );
         JSONObject drawnGraph = convertGraph(subGraph);
         JSONObject firstPersonVertex = vertexWithLabel(drawnGraph.getJSONObject(VERTICES), "me");
         assertFalse(firstPersonVertex.has(IS_FRONTIER_VERTEX_WITH_HIDDEN_VERTICES));
 
         subGraph = userGraph.graphWithDepthAndCenterVertexId(
-                1, twentyHeight.id()
+                1, twentyHeight.uri()
         );
         drawnGraph = convertGraph(subGraph);
         firstPersonVertex = vertexWithLabel(drawnGraph.getJSONObject(VERTICES), "me");
@@ -220,7 +226,7 @@ public class GraphToDrawnGraphConverterTest extends AdaptableGraphComponentTest 
 
         SubGraph subGraph = userGraph.graphWithDepthAndCenterVertexId(
                 2,
-                twentyHeight.id()
+                twentyHeight.uri()
         );
         JSONObject drawnGraph = convertGraph(subGraph);
         JSONObject meVertex = vertexWithLabel(
@@ -232,7 +238,7 @@ public class GraphToDrawnGraphConverterTest extends AdaptableGraphComponentTest 
         );
 
         subGraph = userGraph.graphWithDepthAndCenterVertexId(
-                1, twentyHeight.id());
+                1, twentyHeight.uri());
         drawnGraph = convertGraph(subGraph);
         meVertex = vertexWithLabel(
                 drawnGraph.getJSONObject(VERTICES), "me"
@@ -248,7 +254,7 @@ public class GraphToDrawnGraphConverterTest extends AdaptableGraphComponentTest 
         addNickNameBobToMe();
         SubGraph subGraph =
                 userGraph.graphWithDepthAndCenterVertexId(
-                        2, twentyHeight.id()
+                        2, twentyHeight.uri()
                 );
         JSONObject drawnGraph = convertGraph(subGraph);
         JSONObject firstPersonVertex = vertexWithLabel(
@@ -257,7 +263,7 @@ public class GraphToDrawnGraphConverterTest extends AdaptableGraphComponentTest 
         assertFalse(firstPersonVertex.has(NAME_OF_HIDDEN_PROPERTIES));
 
         subGraph = userGraph.graphWithDepthAndCenterVertexId(
-                1, twentyHeight.id());
+                1, twentyHeight.uri());
         drawnGraph = convertGraph(subGraph);
         firstPersonVertex = vertexWithLabel(drawnGraph.getJSONObject(VERTICES), "me");
         assertThat(
