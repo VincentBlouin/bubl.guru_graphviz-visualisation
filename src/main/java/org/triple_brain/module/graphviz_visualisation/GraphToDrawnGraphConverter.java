@@ -68,12 +68,12 @@ public class GraphToDrawnGraphConverter {
     }
 
     private String vertexRepresentationInDot(Vertex vertex){
-        return "\"" + vertex.uri().toString() + "\" [" + VertexJsonFields.ID + "=\"" + vertex.uri().toString() + "\" " + VertexJsonFields.LABEL + "=\"" + (vertex.label().trim().equals("") ? "aaaaaa" : vertex.label().replaceAll(".", "a")) + "\"]";
+        return "\"" + vertex.uri().toString() + "\" [" + VertexJsonFields.URI + "=\"" + vertex.uri().toString() + "\" " + VertexJsonFields.LABEL + "=\"" + (vertex.label().trim().equals("") ? "aaaaaa" : vertex.label().replaceAll(".", "a")) + "\"]";
 
     }
 
     private String edgeRepresentationInDot(Edge edge){
-        return "\"" + edge.sourceVertex().uri().toString() + "\"->\"" + edge.destinationVertex().uri().toString() + "\"["+ EdgeJsonFields.ID+"=\"" + edge.uri().toString() + "\" "+ EdgeJsonFields.LABEL+"=\"" + (edge.label().trim().equals("") ? "aaaaaa" : edge.label().replaceAll(".", "a")) + "\"];";
+        return "\"" + edge.sourceVertex().uri().toString() + "\"->\"" + edge.destinationVertex().uri().toString() + "\"["+ EdgeJsonFields.URI +"=\"" + edge.uri().toString() + "\" "+ EdgeJsonFields.LABEL+"=\"" + (edge.label().trim().equals("") ? "aaaaaa" : edge.label().replaceAll(".", "a")) + "\"];";
 
     }
 }
