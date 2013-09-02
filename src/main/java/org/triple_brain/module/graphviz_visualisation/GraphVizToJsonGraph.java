@@ -7,6 +7,7 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.triple_brain.module.model.graph.SubGraph;
+import org.triple_brain.module.model.json.drawn_graph.DrawnEdgeJsonFields;
 import org.triple_brain.module.model.json.drawn_graph.DrawnVertexJsonFields;
 import org.triple_brain.module.model.json.graph.EdgeJsonFields;
 import org.triple_brain.module.model.json.graph.VertexJsonFields;
@@ -14,7 +15,6 @@ import org.triple_brain.module.model.json.graph.VertexJsonFields;
 import java.net.URI;
 import java.util.regex.Pattern;
 
-import static org.triple_brain.module.model.json.drawn_graph.DrawnEdgeJsonFields.*;
 import static org.triple_brain.module.model.json.drawn_graph.DrawnGraphJsonFields.BOUNDING_BOX_HEIGHT;
 import static org.triple_brain.module.model.json.drawn_graph.DrawnGraphJsonFields.BOUNDING_BOX_WIDTH;
 import static org.triple_brain.module.model.json.drawn_graph.PointJsonFields.X;
@@ -110,7 +110,10 @@ public class GraphVizToJsonGraph {
                     JSONObject labelPosition = new JSONObject();
                     labelPosition.put(X, labelPosX);
                     labelPosition.put(Y, labelPosY);
-                    edge.put(LABEL_POSITION, labelPosition);
+                    edge.put(
+                            DrawnEdgeJsonFields.LABEL_POSITION,
+                            labelPosition
+                    );
 
                     /*
                     * Scanning for the arrow line bezier points.
@@ -127,14 +130,16 @@ public class GraphVizToJsonGraph {
                     arrowLineBezierPointsScanner.pattern(REAL_NUMBER);
                     //Skipping the next number about the number of bezier points
                     arrowLineBezierPointsScanner.next();
-                    edge.put(ARROW_LINE_BEZIER_POINTS, new JSONArray());
+                    edge.put(DrawnEdgeJsonFields.ARROW_LINE_BEZIER_POINTS, new JSONArray());
                     String arrowLineBezierPointXPositionStr = arrowLineBezierPointsScanner.next();
                     while (!arrowLineBezierPointXPositionStr.equalsIgnoreCase("")) {
                         String arrowLineBezierPointYPositionStr = arrowLineBezierPointsScanner.next();
                         JSONObject arrowLineBezierPoint = new JSONObject();
                         arrowLineBezierPoint.put(X, new Double(arrowLineBezierPointXPositionStr));
                         arrowLineBezierPoint.put(Y, new Double(arrowLineBezierPointYPositionStr));
-                        edge.getJSONArray(ARROW_LINE_BEZIER_POINTS).put(arrowLineBezierPoint);
+                        edge.getJSONArray(
+                                DrawnEdgeJsonFields.ARROW_LINE_BEZIER_POINTS
+                        ).put(arrowLineBezierPoint);
                         arrowLineBezierPointXPositionStr = arrowLineBezierPointsScanner.next();
                     }
 
@@ -151,9 +156,18 @@ public class GraphVizToJsonGraph {
                     JSONObject arrowHeadPoint3 = new JSONObject();
                     arrowHeadPoint3.put(X, mainStringScanner.next());
                     arrowHeadPoint3.put(Y, mainStringScanner.next());
-                    edge.put(ARROW_HEAD_SUMMIT_1, arrowHeadPoint1);
-                    edge.put(ARROW_HEAD_SUMMIT_2, arrowHeadPoint2);
-                    edge.put(ARROW_HEAD_SUMMIT_3, arrowHeadPoint3);
+                    edge.put(
+                            DrawnEdgeJsonFields.ARROW_HEAD_SUMMIT_1,
+                            arrowHeadPoint1
+                    );
+                    edge.put(
+                            DrawnEdgeJsonFields.ARROW_HEAD_SUMMIT_2,
+                            arrowHeadPoint2
+                    );
+                    edge.put(
+                            DrawnEdgeJsonFields.ARROW_HEAD_SUMMIT_3,
+                            arrowHeadPoint3
+                    );
 
                     //adding the newly created edge to the built graph
                     builtGraph.getJSONArray(EDGES).put(edge);
