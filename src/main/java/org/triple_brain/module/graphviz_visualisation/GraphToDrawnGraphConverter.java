@@ -6,8 +6,8 @@ import org.triple_brain.module.model.graph.Edge;
 import org.triple_brain.module.model.graph.SubGraph;
 import org.triple_brain.module.model.graph.Vertex;
 import org.triple_brain.module.model.graph.VertexInSubGraph;
-import org.triple_brain.module.model.json.graph.EdgeJsonFields;
-import org.triple_brain.module.model.json.graph.VertexJsonFields;
+import org.triple_brain.module.model.json.graph.EdgeJson;
+import org.triple_brain.module.model.json.graph.VertexJson;
 
 import java.util.Set;
 
@@ -68,12 +68,12 @@ public class GraphToDrawnGraphConverter {
     }
 
     private String vertexRepresentationInDot(Vertex vertex){
-        return "\"" + vertex.uri().toString() + "\" [" + VertexJsonFields.URI + "=\"" + vertex.uri().toString() + "\" " + VertexJsonFields.LABEL + "=\"" + (vertex.label().trim().equals("") ? "aaaaaa" : vertex.label().replaceAll(".", "a")) + "\"]";
+        return "\"" + vertex.uri().toString() + "\" [" + VertexJson.URI + "=\"" + vertex.uri().toString() + "\" " + VertexJson.LABEL + "=\"" + (vertex.label().trim().equals("") ? "aaaaaa" : vertex.label().replaceAll(".", "a")) + "\"]";
 
     }
 
     private String edgeRepresentationInDot(Edge edge){
-        return "\"" + edge.sourceVertex().uri().toString() + "\"->\"" + edge.destinationVertex().uri().toString() + "\"["+ EdgeJsonFields.URI +"=\"" + edge.uri().toString() + "\" "+ EdgeJsonFields.LABEL+"=\"" + (edge.label().trim().equals("") ? "aaaaaa" : edge.label().replaceAll(".", "a")) + "\"];";
+        return "\"" + edge.sourceVertex().uri().toString() + "\"->\"" + edge.destinationVertex().uri().toString() + "\"["+ EdgeJson.URI +"=\"" + edge.uri().toString() + "\" "+ EdgeJson.LABEL+"=\"" + (edge.label().trim().equals("") ? "aaaaaa" : edge.label().replaceAll(".", "a")) + "\"];";
 
     }
 }

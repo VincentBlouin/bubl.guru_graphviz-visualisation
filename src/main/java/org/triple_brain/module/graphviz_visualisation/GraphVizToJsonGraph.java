@@ -7,10 +7,10 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.triple_brain.module.model.graph.SubGraph;
-import org.triple_brain.module.model.json.drawn_graph.DrawnEdgeJsonFields;
-import org.triple_brain.module.model.json.drawn_graph.DrawnVertexJsonFields;
-import org.triple_brain.module.model.json.graph.EdgeJsonFields;
-import org.triple_brain.module.model.json.graph.VertexJsonFields;
+import org.triple_brain.module.model.json.drawn_graph.DrawnEdgeJson;
+import org.triple_brain.module.model.json.drawn_graph.DrawnVertexJson;
+import org.triple_brain.module.model.json.graph.EdgeJson;
+import org.triple_brain.module.model.json.graph.VertexJson;
 
 import java.net.URI;
 import java.util.regex.Pattern;
@@ -95,7 +95,7 @@ public class GraphVizToJsonGraph {
                 String elementId = mainStringScanner.lastRemovedText().replace("\"", "");
 
                 if (isEdge) {
-                    JSONObject edge = EdgeJsonFields.toJson(
+                    JSONObject edge = EdgeJson.toJson(
                             originalGraph.edgeWithIdentifier(
                                     URI.create(elementId)
                             )
@@ -111,7 +111,7 @@ public class GraphVizToJsonGraph {
                     labelPosition.put(X, labelPosX);
                     labelPosition.put(Y, labelPosY);
                     edge.put(
-                            DrawnEdgeJsonFields.LABEL_POSITION,
+                            DrawnEdgeJson.LABEL_POSITION,
                             labelPosition
                     );
 
@@ -130,7 +130,7 @@ public class GraphVizToJsonGraph {
                     arrowLineBezierPointsScanner.pattern(REAL_NUMBER);
                     //Skipping the next number about the number of bezier points
                     arrowLineBezierPointsScanner.next();
-                    edge.put(DrawnEdgeJsonFields.ARROW_LINE_BEZIER_POINTS, new JSONArray());
+                    edge.put(DrawnEdgeJson.ARROW_LINE_BEZIER_POINTS, new JSONArray());
                     String arrowLineBezierPointXPositionStr = arrowLineBezierPointsScanner.next();
                     while (!arrowLineBezierPointXPositionStr.equalsIgnoreCase("")) {
                         String arrowLineBezierPointYPositionStr = arrowLineBezierPointsScanner.next();
@@ -138,7 +138,7 @@ public class GraphVizToJsonGraph {
                         arrowLineBezierPoint.put(X, new Double(arrowLineBezierPointXPositionStr));
                         arrowLineBezierPoint.put(Y, new Double(arrowLineBezierPointYPositionStr));
                         edge.getJSONArray(
-                                DrawnEdgeJsonFields.ARROW_LINE_BEZIER_POINTS
+                                DrawnEdgeJson.ARROW_LINE_BEZIER_POINTS
                         ).put(arrowLineBezierPoint);
                         arrowLineBezierPointXPositionStr = arrowLineBezierPointsScanner.next();
                     }
@@ -157,22 +157,22 @@ public class GraphVizToJsonGraph {
                     arrowHeadPoint3.put(X, mainStringScanner.next());
                     arrowHeadPoint3.put(Y, mainStringScanner.next());
                     edge.put(
-                            DrawnEdgeJsonFields.ARROW_HEAD_SUMMIT_1,
+                            DrawnEdgeJson.ARROW_HEAD_SUMMIT_1,
                             arrowHeadPoint1
                     );
                     edge.put(
-                            DrawnEdgeJsonFields.ARROW_HEAD_SUMMIT_2,
+                            DrawnEdgeJson.ARROW_HEAD_SUMMIT_2,
                             arrowHeadPoint2
                     );
                     edge.put(
-                            DrawnEdgeJsonFields.ARROW_HEAD_SUMMIT_3,
+                            DrawnEdgeJson.ARROW_HEAD_SUMMIT_3,
                             arrowHeadPoint3
                     );
 
                     //adding the newly created edge to the built graph
                     builtGraph.getJSONArray(EDGES).put(edge);
                 } else {
-                    JSONObject jsonVertex = VertexJsonFields.toJson(
+                    JSONObject jsonVertex = VertexJson.toJson(
                             originalGraph.vertexWithIdentifier(
                                     URI.create(elementId)
                             )
@@ -188,12 +188,12 @@ public class GraphVizToJsonGraph {
                     JSONObject position = new JSONObject();
                     position.put(X, xPosition);
                     position.put(Y, yPosition);
-                    jsonVertex.put(DrawnVertexJsonFields.POSITION, position);
+                    jsonVertex.put(DrawnVertexJson.POSITION, position);
 
                     //scanning for the vertex width and height
                     mainStringScanner.pattern(REAL_NUMBER);
-                    jsonVertex.put(DrawnVertexJsonFields.WIDTH, mainStringScanner.next());
-                    jsonVertex.put(DrawnVertexJsonFields.HEIGHT, mainStringScanner.next());
+                    jsonVertex.put(DrawnVertexJson.WIDTH, mainStringScanner.next());
+                    jsonVertex.put(DrawnVertexJson.HEIGHT, mainStringScanner.next());
 
                     //adding the newly created vertex to the built graph
                     builtGraph.getJSONObject(VERTICES).put(elementId, jsonVertex);

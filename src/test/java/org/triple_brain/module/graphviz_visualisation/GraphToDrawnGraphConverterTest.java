@@ -10,8 +10,8 @@ import org.triple_brain.module.model.graph.AdaptableGraphComponentTest;
 import org.triple_brain.module.model.graph.Edge;
 import org.triple_brain.module.model.graph.SubGraph;
 import org.triple_brain.module.model.graph.Vertex;
-import org.triple_brain.module.model.json.graph.EdgeJsonFields;
-import org.triple_brain.module.model.json.graph.VertexJsonFields;
+import org.triple_brain.module.model.json.graph.EdgeJson;
+import org.triple_brain.module.model.json.graph.VertexJson;
 
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -19,9 +19,9 @@ import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
-import static org.triple_brain.module.model.json.drawn_graph.DrawnEdgeJsonFields.*;
+import static org.triple_brain.module.model.json.drawn_graph.DrawnEdgeJson.*;
 import static org.triple_brain.module.model.json.drawn_graph.DrawnGraphJsonFields.*;
-import static org.triple_brain.module.model.json.drawn_graph.DrawnVertexJsonFields.*;
+import static org.triple_brain.module.model.json.drawn_graph.DrawnVertexJson.*;
 import static org.triple_brain.module.model.json.drawn_graph.PointJsonFields.X;
 import static org.triple_brain.module.model.json.drawn_graph.PointJsonFields.Y;
 
@@ -323,7 +323,7 @@ public class GraphToDrawnGraphConverterTest extends AdaptableGraphComponentTest 
     private JSONObject vertexWithLabel(JSONObject verticesAsObject, String label) throws Exception{
         JSONArray vertices = verticesAsArray(verticesAsObject);
         for(int i = 0 ; i < vertices.length(); i++){
-            if(vertices.getJSONObject(i).getString(VertexJsonFields.LABEL).equals(label)){
+            if(vertices.getJSONObject(i).getString(VertexJson.LABEL).equals(label)){
                 return vertices.getJSONObject(i);
             }
         }
@@ -332,7 +332,7 @@ public class GraphToDrawnGraphConverterTest extends AdaptableGraphComponentTest 
 
     private JSONObject edgeWithLabel(JSONArray edges, String label) throws Exception{
         for(int i = 0 ; i < edges.length(); i++){
-            if(edges.getJSONObject(i).getString(EdgeJsonFields.LABEL).equals(label)){
+            if(edges.getJSONObject(i).getString(EdgeJson.LABEL).equals(label)){
                 return edges.getJSONObject(i);
             }
         }
@@ -342,7 +342,7 @@ public class GraphToDrawnGraphConverterTest extends AdaptableGraphComponentTest 
     private boolean containsVertexWithLabel(JSONObject verticesAsObject, String label) throws Exception{
         JSONArray vertices = verticesAsArray(verticesAsObject);
         for(int i = 0 ; i < vertices.length(); i++){
-            if(vertices.getJSONObject(i).getString(VertexJsonFields.LABEL).equals(label)){
+            if(vertices.getJSONObject(i).getString(VertexJson.LABEL).equals(label)){
                 return true;
             }
         }
@@ -351,7 +351,7 @@ public class GraphToDrawnGraphConverterTest extends AdaptableGraphComponentTest 
 
     private boolean containsEdgeWithLabel(JSONArray edges, String label) throws Exception{
         for(int i = 0 ; i < edges.length(); i++){
-            if(edges.getJSONObject(i).getString(VertexJsonFields.LABEL).equals(label)){
+            if(edges.getJSONObject(i).getString(VertexJson.LABEL).equals(label)){
                 return true;
             }
         }
