@@ -85,8 +85,8 @@ public class GraphToDrawnGraphConverterTest extends AdaptableGraphComponentTest 
 
     @Test
     public void with_a_single_vertex_can_convert_graph_to_json_drawn_graph() throws Exception {
-        assertThat(wholeGraph().numberOfVertices(), is(2));
-        assertThat(wholeGraph().numberOfEdges(), is(1));
+        assertThat(wholeGraphAroundDefaultCenterVertex().numberOfVertices(), is(2));
+        assertThat(wholeGraphAroundDefaultCenterVertex().numberOfEdges(), is(1));
 
         JSONObject drawnGraph = convertWholeGraph();
 
@@ -359,7 +359,7 @@ public class GraphToDrawnGraphConverterTest extends AdaptableGraphComponentTest 
     }
 
     private JSONObject convertWholeGraph()throws JSONException{
-        return GraphToDrawnGraphConverter.withGraph(wholeGraph()).convert();
+        return GraphToDrawnGraphConverter.withGraph(wholeGraphAroundDefaultCenterVertex()).convert();
     }
 
     private JSONObject convertGraph(SubGraph graph)throws JSONException{
