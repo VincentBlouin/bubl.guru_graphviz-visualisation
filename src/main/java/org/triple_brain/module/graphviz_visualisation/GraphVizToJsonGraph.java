@@ -10,7 +10,7 @@ import org.triple_brain.module.model.graph.SubGraph;
 import org.triple_brain.module.model.json.drawn_graph.DrawnEdgeJson;
 import org.triple_brain.module.model.json.drawn_graph.DrawnVertexJson;
 import org.triple_brain.module.model.json.graph.EdgeJson;
-import org.triple_brain.module.model.json.graph.VertexJson;
+import org.triple_brain.module.model.json.graph.VertexInSubGraphJson;
 
 import java.net.URI;
 import java.util.regex.Pattern;
@@ -172,7 +172,7 @@ public class GraphVizToJsonGraph {
                     //adding the newly created edge to the built graph
                     builtGraph.getJSONArray(EDGES).put(edge);
                 } else {
-                    JSONObject jsonVertex = VertexJson.toJson(
+                    JSONObject jsonVertex = VertexInSubGraphJson.toJson(
                             originalGraph.vertexWithIdentifier(
                                     URI.create(elementId)
                             )
